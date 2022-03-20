@@ -36,7 +36,38 @@
 -----------------------------------------------------------------F-F*/
 INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ INT nCmdShow)
 {
-  library::PrintHi();
+    UNREFERENCED_PARAMETER(hPrevInstance);
+    UNREFERENCED_PARAMETER(lpCmdLine);
 
-  return 0;
+    if (FAILED(library::InitWindow(hInstance, nCmdShow)))
+    {
+        return 0;
+    }
+
+    if (FAILED(library::InitDevice()))
+    {
+        library::CleanupDevice();
+        return 0;
+    }
+
+    // Main message loop
+    MSG msg = { 0 };
+    while (WM_QUIT != msg.message)
+    {
+        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        {
+            // Call WndProc Function
+            TranslateMessage(&msg);
+            DispatchMessage(&msg);
+        }
+        else
+        {
+            library::Render();
+        }
+    }
+
+    // Destroy
+    library::CleanupDevice();
+
+    return static_cast<INT>(msg.wParam);
 }
