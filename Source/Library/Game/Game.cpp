@@ -231,7 +231,7 @@ namespace library
 
         // Create swap chain
         Microsoft::WRL::ComPtr<IDXGIFactory2> dxgiFactory2 = nullptr;
-        if (dxgiFactory.As(&dxgiFactory2))
+        if (SUCCEEDED(dxgiFactory.As(&dxgiFactory2)))
         {
             // DirectX 11.1 or later
             if (SUCCEEDED(g_pD3dDevice.As(&g_pD3dDevice1)))
