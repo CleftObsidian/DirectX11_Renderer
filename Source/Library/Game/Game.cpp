@@ -65,13 +65,13 @@ namespace library
                 DestroyWindow(hWnd);
             }
             // Else: user canceled. Do nothing.
-            return 0;
+            return S_OK;
 
         default:
             return DefWindowProc(hWnd, uMsg, wParam, lParam);
         }
 
-        return 0;
+        return S_OK;
     }
 
     HRESULT InitWindow(_In_ HINSTANCE hInstance, _In_ INT nCmdShow)
@@ -79,18 +79,18 @@ namespace library
         // Register class
         WNDCLASSEX wcex;
 
-        wcex.cbSize = sizeof(WNDCLASSEX);
-        wcex.style = CS_HREDRAW | CS_VREDRAW;
+        wcex.cbSize = static_cast<UINT> (sizeof(WNDCLASSEX));
+        wcex.style = static_cast<UINT> (CS_HREDRAW | CS_VREDRAW);
         wcex.lpfnWndProc = WindowProc;
         wcex.cbClsExtra = 0;
         wcex.cbWndExtra = 0;
         wcex.hInstance = hInstance;
-        wcex.hIcon = LoadIcon(hInstance, (LPCTSTR) IDI_TUTORIAL1);
+        wcex.hIcon = LoadIcon(hInstance, reinterpret_cast<LPCTSTR> (IDI_TUTORIAL1));
         wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
         wcex.hbrBackground = reinterpret_cast<HBRUSH> (COLOR_WINDOW + 1);
         wcex.lpszMenuName = nullptr;
         wcex.lpszClassName = L"GameGraphicsProgramming";
-        wcex.hIconSm = LoadIcon(wcex.hInstance, (LPCTSTR) IDI_TUTORIAL1);
+        wcex.hIconSm = LoadIcon(wcex.hInstance, reinterpret_cast<LPCTSTR> (IDI_TUTORIAL1));
 
         if (!RegisterClassEx(&wcex))
         {
@@ -149,10 +149,10 @@ namespace library
 
         RECT rc;
         GetClientRect(g_hWnd, &rc);
-        UINT width = rc.right - rc.left;
-        UINT height = rc.bottom - rc.top;
+        UINT width = static_cast<UINT> (rc.right - rc.left);
+        UINT height = static_cast<UINT> (rc.bottom - rc.top);
 
-        UINT createDeviceFlags = 0;
+        UINT createDeviceFlags = 0u;
 #ifdef _DEBUG
         createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
 #endif // _DEBUG
@@ -174,7 +174,7 @@ namespace library
         };
         UINT numFeatureLevels = ARRAYSIZE(featureLevels);
 
-        for (UINT driverTypeIndex = 0; driverTypeIndex < numDriverTypes; ++driverTypeIndex)
+        for (UINT driverTypeIndex = 0u; driverTypeIndex < numDriverTypes; ++driverTypeIndex)
         {
             g_driverType = driverTypes[driverTypeIndex];
             hr = D3D11CreateDevice(nullptr, g_driverType, nullptr, createDeviceFlags, featureLevels, numFeatureLevels,
@@ -243,8 +243,8 @@ namespace library
             sd.Width = width;
             sd.Height = height;
             sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            sd.SampleDesc.Count = 1;
-            sd.SampleDesc.Quality = 0;
+            sd.SampleDesc.Count = 1u;
+            sd.SampleDesc.Quality = 0u;
             sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
             sd.BufferCount = 1;
 
@@ -260,16 +260,16 @@ namespace library
         {
             // DirectX 11.0 systems
             DXGI_SWAP_CHAIN_DESC sd = {};
-            sd.BufferCount = 1;
+            sd.BufferCount = 1u;
             sd.BufferDesc.Width = width;
             sd.BufferDesc.Height = height;
             sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-            sd.BufferDesc.RefreshRate.Numerator = 60;
-            sd.BufferDesc.RefreshRate.Denominator = 1;
+            sd.BufferDesc.RefreshRate.Numerator = 60u;
+            sd.BufferDesc.RefreshRate.Denominator = 1u;
             sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
             sd.OutputWindow = g_hWnd;
-            sd.SampleDesc.Count = 1;
-            sd.SampleDesc.Quality = 0;
+            sd.SampleDesc.Count = 1u;
+            sd.SampleDesc.Quality = 0u;
             sd.Windowed = TRUE;
 
             hr = dxgiFactory->CreateSwapChain(g_pD3dDevice.Get(), &sd, &g_pSwapChain);
@@ -293,7 +293,7 @@ namespace library
 
         // Create a render target view
         Microsoft::WRL::ComPtr<ID3D11Texture2D> pBackBuffer = nullptr;
-        hr = g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
+        hr = g_pSwapChain->GetBuffer(0u, IID_PPV_ARGS(&pBackBuffer));
         if (FAILED(hr))
         {
             MessageBox(
@@ -322,13 +322,13 @@ namespace library
 
         // Setup the viewport
         D3D11_VIEWPORT vp;
-        vp.Width = (FLOAT)width;
-        vp.Height = (FLOAT)height;
+        vp.Width = static_cast<FLOAT> (width);
+        vp.Height = static_cast<FLOAT> (height);
         vp.MinDepth = 0.0f;
         vp.MaxDepth = 1.0f;
-        vp.TopLeftX = 0;
-        vp.TopLeftY = 0;
-        g_pImmediateContext->RSSetViewports(1, &vp);
+        vp.TopLeftX = 0.0f;
+        vp.TopLeftY = 0.0f;
+        g_pImmediateContext->RSSetViewports(1u, &vp);
 
         return S_OK;
     }
@@ -350,6 +350,6 @@ namespace library
     {
         // Just clear the backbuffer
         g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView.Get(), Colors::MidnightBlue);
-        g_pSwapChain->Present(0, 0);
+        g_pSwapChain->Present(0u, 0u);
     }
 }
