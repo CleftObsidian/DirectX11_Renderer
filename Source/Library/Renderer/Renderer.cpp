@@ -130,7 +130,7 @@ namespace library
             // DirectX 11.1 or later
             if (SUCCEEDED(m_d3dDevice.As(&m_d3dDevice1)))
             {
-                (void)m_immediateContext.As(&m_immediateContext1);
+                m_immediateContext.As(&m_immediateContext1);
             }
 
             DXGI_SWAP_CHAIN_DESC1 sd = {};
@@ -211,8 +211,8 @@ namespace library
 
         // Setup the viewport
         D3D11_VIEWPORT vp;
-        vp.Width = static_cast<FLOAT> (width);
-        vp.Height = static_cast<FLOAT> (height);
+        vp.Width = static_cast<FLOAT>(width);
+        vp.Height = static_cast<FLOAT>(height);
         vp.MinDepth = 0.0f;
         vp.MaxDepth = 1.0f;
         vp.TopLeftX = 0.0f;

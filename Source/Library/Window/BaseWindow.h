@@ -236,9 +236,9 @@ namespace library
         }
 
         // Create window
-        RECT rc = { 0, 0, nWidth, nHeight};
+        RECT rc = { 0, 0, nWidth, nHeight };
         AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-        m_hWnd = CreateWindow(PSZ_COURSE_TITLE, m_pszWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, m_hInstance, this);
+        m_hWnd = CreateWindowEx(0, PSZ_COURSE_TITLE, m_pszWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, m_hInstance, this);
 
         if (!m_hWnd)
         {
