@@ -13,10 +13,11 @@ namespace library
 	  Modifies: [m_pszGameName, m_mainWindow, m_renderer].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 	Game::Game(_In_ PCWSTR pszGameName)
+		: m_pszGameName(pszGameName)
+		, m_mainWindow(std::make_unique<MainWindow>())
+		, m_renderer(std::make_unique<Renderer>())
 	{
-		m_pszGameName = pszGameName;
-		m_mainWindow = std::make_unique<MainWindow>();
-		m_renderer = std::make_unique<Renderer>();
+		// blank
 	}
 
 	/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -25,7 +26,7 @@ namespace library
 	  Summary:  Initializes the components of the game
 
 	  Args:     HINSTANCE hInstance
-				  Handle to the instance
+	  			  Handle to the instance
 				INT nCmdShow
 				  Is a flag that says whether the main application window
 				  will be minimized, maximized, or shown normally
@@ -33,9 +34,9 @@ namespace library
 	  Modifies: [m_mainWindow, m_renderer].
 
 	  Returns:  HRESULT
-				Status code
+	  			Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	HRESULT Game::Initialize(_In_ HINSTANCE hInstance, _In_ INT nCmdShow)
+	HRESULT Game::Initialize(_In_ HINSTANCE hInstance, _In_ INT	nCmdShow)
 	{
 		if (FAILED(m_mainWindow->Initialize(hInstance, nCmdShow, m_pszGameName)))
 		{

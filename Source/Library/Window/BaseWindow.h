@@ -128,10 +128,11 @@ namespace library
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     template <class DerivedType>
     BaseWindow<DerivedType>::BaseWindow()
+        : m_hInstance(nullptr)
+        , m_hWnd(nullptr)
+        , m_pszWindowName(nullptr)
     {
-        m_hInstance = nullptr;
-        m_hWnd = nullptr;
-        m_pszWindowName = nullptr;
+        // blank
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -201,20 +202,21 @@ namespace library
         m_pszWindowName = pszWindowName;
 
         // Register class
-        WNDCLASSEX wcex;
-
-        wcex.cbSize = static_cast<UINT>(sizeof(WNDCLASSEX));
-        wcex.style = static_cast<UINT>(CS_HREDRAW | CS_VREDRAW);
-        wcex.lpfnWndProc = WindowProc;
-        wcex.cbClsExtra = 0;
-        wcex.cbWndExtra = 0;
-        wcex.hInstance = m_hInstance;
-        wcex.hIcon = LoadIcon(m_hInstance, reinterpret_cast<LPCTSTR>(IDI_TUTORIAL));
-        wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
-        wcex.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1);
-        wcex.lpszMenuName = nullptr;
-        wcex.lpszClassName = PSZ_COURSE_TITLE;
-        wcex.hIconSm = LoadIcon(wcex.hInstance, reinterpret_cast<LPCTSTR>(IDI_TUTORIAL));
+        WNDCLASSEX wcex =
+        {
+            .cbSize = static_cast<UINT>(sizeof(WNDCLASSEX)),
+            .style = static_cast<UINT>(CS_HREDRAW | CS_VREDRAW),
+            .lpfnWndProc = WindowProc,
+            .cbClsExtra = 0,
+            .cbWndExtra = 0,
+            .hInstance = m_hInstance,
+            .hIcon = LoadIcon(m_hInstance, reinterpret_cast<LPCTSTR>(IDC_MYICON)),
+            .hCursor = LoadCursor(nullptr, IDC_ARROW),
+            .hbrBackground = reinterpret_cast<HBRUSH>(COLOR_WINDOW + 1),
+            .lpszMenuName = nullptr,
+            .lpszClassName = GetWindowClassName(),
+            .hIconSm = LoadIcon(m_hInstance, reinterpret_cast<LPCTSTR>(IDC_MYICON))
+        };
 
         if (!RegisterClassEx(&wcex))
         {
@@ -238,7 +240,18 @@ namespace library
         // Create window
         RECT rc = { 0, 0, nWidth, nHeight };
         AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-        m_hWnd = CreateWindowEx(0, PSZ_COURSE_TITLE, m_pszWindowName, dwStyle, x, y, nWidth, nHeight, hWndParent, hMenu, m_hInstance, this);
+        m_hWnd = CreateWindowEx(0,
+                                GetWindowClassName(),
+                                m_pszWindowName,
+                                dwStyle,
+                                x,
+                                y,
+                                nWidth,
+                                nHeight,
+                                hWndParent,
+                                hMenu,
+                                m_hInstance,
+                                this);
 
         if (!m_hWnd)
         {
@@ -263,4 +276,5 @@ namespace library
 
         return S_OK;
     }
+
 }
