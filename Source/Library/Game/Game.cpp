@@ -95,8 +95,8 @@ namespace library
                 // Update our time
                 QueryPerformanceCounter(&CurrentTime);
 
-                deltaTime = (FLOAT)(CurrentTime.QuadPart - LastTime.QuadPart);
-                deltaTime /= (FLOAT)(Frequency.QuadPart);
+                deltaTime = static_cast<FLOAT>(CurrentTime.QuadPart - LastTime.QuadPart);
+                deltaTime /= static_cast<FLOAT>(Frequency.QuadPart);
 
                 // Render
                 m_renderer->Update(deltaTime);
