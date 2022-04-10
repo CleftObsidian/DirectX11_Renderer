@@ -13,9 +13,6 @@
 
 #include <memory>
 
-/*--------------------------------------------------------------------
-  TODO: Include custom cubes (remove the comment)
---------------------------------------------------------------------*/
 #include "Game/Game.h"
 
 #include "Cube/SunCube.h"
@@ -67,9 +64,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-    /*--------------------------------------------------------------------
-      TODO: Add your cubes and set their shaders (remove the comment)
-    --------------------------------------------------------------------*/
     // Add SunCube
     std::shared_ptr<SunCube> sunCube = std::make_shared<SunCube>();
     if (FAILED(game->GetRenderer()->AddRenderable(L"SunCube", sunCube)))
