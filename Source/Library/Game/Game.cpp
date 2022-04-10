@@ -27,7 +27,7 @@ namespace library
 
       Args:     HINSTANCE hInstance
                   Handle to the instance
-                INT nCmdShow
+              INT nCmdShow
                   Is a flag that says whether the main application window
                   will be minimized, maximized, or shown normally
 
@@ -88,6 +88,12 @@ namespace library
 
                 deltaTime = static_cast<FLOAT>(CurrentTime.QuadPart - LastTime.QuadPart);
                 deltaTime /= static_cast<FLOAT>(Frequency.QuadPart);
+
+                LastTime = CurrentTime;
+
+                // Handle input
+                m_renderer->HandleInput(m_mainWindow->GetDirections(), m_mainWindow->GetMouseRelativeMovement(), deltaTime);
+                m_mainWindow->ResetMouseMovement();
 
                 // Render
                 m_renderer->Update(deltaTime);

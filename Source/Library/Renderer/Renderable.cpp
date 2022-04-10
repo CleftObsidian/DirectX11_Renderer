@@ -12,8 +12,8 @@ namespace library
                 ID3D11DeviceContext* pImmediateContext
                   The Direct3D context to set buffers
 
-      Modifies: [m_vertexBuffer, m_indexBuffer, m_constantBuffer, 
-                  m_world].
+      Modifies: [m_vertexBuffer, m_indexBuffer, m_constantBuffer,
+                 m_world].
 
       Returns:  HRESULT
                   Status code
@@ -97,7 +97,7 @@ namespace library
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderable::SetVertexShader
 
-      Summary:  Sets the vertex shader to be used for this renderable 
+      Summary:  Sets the vertex shader to be used for this renderable
                 object
 
       Args:     const std::shared_ptr<VertexShader>& vertexShader
@@ -227,7 +227,7 @@ namespace library
     void Renderable::RotateX(_In_ FLOAT angle)
     {
         // m_world *= x-axis rotation by angle matrix
-        m_world *= XMMatrixRotationAxis(m_world.r[0], angle);
+        m_world *= XMMatrixRotationX(angle);
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -240,7 +240,7 @@ namespace library
     void Renderable::RotateY(_In_ FLOAT angle)
     {
         // m_world *= y-axis rotation by angle matrix
-        m_world *= XMMatrixRotationAxis(m_world.r[1], angle);
+        m_world *= XMMatrixRotationY(angle);
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -253,7 +253,7 @@ namespace library
     void Renderable::RotateZ(_In_ FLOAT angle)
     {
         // m_world *= z-axis rotation by angle matrix
-        m_world *= XMMatrixRotationAxis(m_world.r[2], angle);
+        m_world *= XMMatrixRotationZ(angle);
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M

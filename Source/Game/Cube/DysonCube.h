@@ -15,5 +15,6 @@ public:
     void Update(_In_ FLOAT deltaTime) override;
 
 private:
+    FLOAT m_totalTime;
     FLOAT m_distance;
 };

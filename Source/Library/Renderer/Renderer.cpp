@@ -8,9 +8,9 @@ namespace library
       Summary:  Constructor
 
       Modifies: [m_driverType, m_featureLevel, m_d3dDevice, m_d3dDevice1,
-                  m_immediateContext, m_immediateContext1, m_swapChain,
-                  m_swapChain1, m_renderTargetView, m_vertexShader,
-                  m_pixelShader, m_vertexLayout, m_vertexBuffer].
+                 m_immediateContext, m_immediateContext1, m_swapChain,
+                 m_swapChain1, m_renderTargetView, m_vertexShader,
+                 m_pixelShader, m_vertexLayout, m_vertexBuffer].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     Renderer::Renderer()
         : m_driverType(D3D_DRIVER_TYPE_NULL)
@@ -24,7 +24,7 @@ namespace library
         , m_renderTargetView(nullptr)
         , m_depthStencil(nullptr)
         , m_depthStencilView(nullptr)
-        , m_view()
+        , m_camera(Camera(XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f)))
         , m_projection()
         , m_renderables()
         , m_vertexShaders()
@@ -42,9 +42,9 @@ namespace library
                   Handle to the window
 
       Modifies: [m_d3dDevice, m_featureLevel, m_immediateContext,
-                  m_d3dDevice1, m_immediateContext1, m_swapChain1,
-                  m_swapChain, m_renderTargetView, m_vertexShader,
-                  m_vertexLayout, m_pixelShader, m_vertexBuffer].
+                 m_d3dDevice1, m_immediateContext1, m_swapChain1,
+                 m_swapChain, m_renderTargetView, m_vertexShader,
+                 m_vertexLayout, m_pixelShader, m_vertexBuffer].
 
       Returns:  HRESULT
                   Status code
@@ -57,6 +57,31 @@ namespace library
         GetClientRect(hWnd, &rc);
         UINT uWidth = static_cast<UINT>(rc.right - rc.left);
         UINT uHeight = static_cast<UINT>(rc.bottom - rc.top);
+
+        // Clip cursor to screen
+        POINT LeftTop =
+        {
+            .x = rc.left,
+            .y = rc.top
+        };
+        POINT RightBottom =
+        {
+            .x = rc.right,
+            .y = rc.bottom
+        };
+
+        ClientToScreen(hWnd, &LeftTop);
+        ClientToScreen(hWnd, &RightBottom);
+
+        rc =
+        {
+            .left = LeftTop.x,
+            .top = LeftTop.y,
+            .right = RightBottom.x,
+            .bottom = RightBottom.y
+        };
+
+        ClipCursor(&rc);
 
         UINT uCreateDeviceFlags = 0u;
 #ifdef _DEBUG
@@ -302,12 +327,6 @@ namespace library
             renderable->second->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
         }
 
-        // Initialize the view matrix
-        XMVECTOR Eye = XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f);
-        XMVECTOR At = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-        XMVECTOR Up = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-        m_view = XMMatrixLookAtLH(Eye, At, Up);
-
         // Initialize the projection matrix
         m_projection = XMMatrixPerspectiveFovLH(XM_PIDIV2, static_cast<FLOAT>(uWidth) / static_cast<FLOAT>(uHeight), 0.01f, 100.0f);
 
@@ -407,10 +426,27 @@ namespace library
             );
             return E_FAIL;
         }
-        
+
         m_pixelShaders.insert(std::make_pair(pszPixelShaderName, pixelShader));
 
         return S_OK;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::HandleInput
+
+      Summary:  Add the pixel shader into the renderer and initialize it
+
+      Args:     const DirectionsInput& directions
+                  Data structure containing keyboard input data
+                const MouseRelativeMovement& mouseRelativeMovement
+                  Data structure containing mouse relative input data
+
+      Modifies: [m_camera].
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    void Renderer::HandleInput(_In_ const DirectionsInput& directions, _In_ const MouseRelativeMovement& mouseRelativeMovement, _In_ FLOAT deltaTime)
+    {
+        m_camera.HandleInput(directions, mouseRelativeMovement, deltaTime);
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -459,12 +495,12 @@ namespace library
 
             // Set the input layout
             m_immediateContext->IASetInputLayout(renderable->second->GetVertexLayout().Get());
-            
+
             // Update constant buffer
             ConstantBuffer cb =
             {
                 .World = XMMatrixTranspose(renderable->second->GetWorldMatrix()),
-                .View = XMMatrixTranspose(m_view),
+                .View = XMMatrixTranspose(m_camera.GetView()),
                 .Projection = XMMatrixTranspose(m_projection)
             };
             m_immediateContext->UpdateSubresource(renderable->second->GetConstantBuffer().Get(), 0u, nullptr, &cb, 0u, 0u);
@@ -473,7 +509,7 @@ namespace library
             m_immediateContext->VSSetShader(renderable->second->GetVertexShader().Get(), nullptr, 0u);
             m_immediateContext->VSSetConstantBuffers(0u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetShader(renderable->second->GetPixelShader().Get(), nullptr, 0u);
-            m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0); 
+            m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
         }
 
         // Present the information rendered to the back buffer to the front buffer
