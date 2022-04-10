@@ -10,7 +10,7 @@ void DysonCube::Update(_In_ FLOAT deltaTime)
 	m_totalTime += deltaTime;
 
 	// Rotate
-	m_distance = static_cast<FLOAT>(cos(m_totalTime * XM_PI * 5.0f) + 3.0f);
+	m_distance = static_cast<FLOAT>(cos(m_totalTime * 20.0f) + 3.0f);
 	
 	XMMATRIX spin = XMMatrixRotationX(-m_totalTime * 10.0f);
 	XMMATRIX orbit = XMMatrixRotationZ(-m_totalTime * 3.0f);
