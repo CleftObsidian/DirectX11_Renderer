@@ -103,6 +103,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Cube\BaseCube.cpp" />
+    <ClCompile Include="Cube\Cube.cpp" />
     <ClCompile Include="Cube\DysonCube.cpp" />
     <ClCompile Include="Cube\PlanetCube.cpp" />
     <ClCompile Include="Cube\SunCube.cpp" />
@@ -117,9 +118,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h" />
+    <ClInclude Include="Cube\Cube.h" />
     <ClInclude Include="Cube\DysonCube.h" />
     <ClInclude Include="Cube\PlanetCube.h" />
     <ClInclude Include="Cube\SunCube.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="seafloor.dds" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
