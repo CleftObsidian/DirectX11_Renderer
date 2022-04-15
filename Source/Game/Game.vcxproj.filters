@@ -77,5 +77,8 @@
     <Image Include="seafloor.dds">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="brickwall.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

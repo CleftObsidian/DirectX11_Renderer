@@ -8,9 +8,6 @@
   Args:     const std::filesystem::path& textureFilePath
               Path to the texture to use
 M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-/*--------------------------------------------------------------------
-  TODO: Cube::Cube definition (remove the comment)
---------------------------------------------------------------------*/
 Cube::Cube(const std::filesystem::path& textureFilePath)
     : BaseCube(textureFilePath)
 {

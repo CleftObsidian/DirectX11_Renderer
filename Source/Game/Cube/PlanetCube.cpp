@@ -1,19 +1,25 @@
 #include "Cube/PlanetCube.h"
 
+PlanetCube::PlanetCube(const std::filesystem::path& textureFilePath)
+	: BaseCube(textureFilePath)
+	, m_spin()
+	, m_orbit()
+	, m_translate()
+	, m_scale(XMMatrixScaling(0.5f, 0.5f, 0.5f))
+{
+	// empty
+}
+
 void PlanetCube::Update(_In_ FLOAT deltaTime)
 {
 	// Add time
-	if (XMMatrixIsIdentity(m_world))
-	{
-		m_totalTime = 0.0f;
-	}
-	m_totalTime += deltaTime;
+	static FLOAT s_totalTime = 0.0f;
+	s_totalTime += deltaTime;
 
 	// Rotate around origin
-	XMMATRIX spin = XMMatrixRotationZ(-m_totalTime);
-	XMMATRIX orbit = XMMatrixRotationY(-m_totalTime * 2.0f);
-	XMMATRIX translate = XMMatrixTranslation(-4.0f, 0.0f, 0.0f);
-	XMMATRIX scale = XMMatrixScaling(0.3f, 0.3f, 0.3f);
+	m_spin = XMMatrixRotationZ(-s_totalTime);
+	m_orbit = XMMatrixRotationY(-s_totalTime * 2.0f);
+	m_translate = XMMatrixTranslation(-4.0f, XMScalarSin(s_totalTime), 0.0f);
 
-	m_world = scale * spin * translate * orbit;
+	m_world = m_scale * m_spin * m_translate * m_orbit;
 }

@@ -5,7 +5,7 @@
 class DysonCube final : public BaseCube
 {
 public:
-    DysonCube() = default;
+    DysonCube(const std::filesystem::path& textureFilePath);
     DysonCube(const DysonCube & other) = delete;
     DysonCube(DysonCube && other) = delete;
     DysonCube& operator=(const DysonCube & other) = delete;
@@ -15,6 +15,8 @@ public:
     void Update(_In_ FLOAT deltaTime) override;
 
 private:
-    FLOAT m_totalTime;
-    FLOAT m_distance;
+    XMMATRIX m_spin;
+    XMMATRIX m_orbit;
+    XMMATRIX m_translate;
+    XMMATRIX m_scale;
 };

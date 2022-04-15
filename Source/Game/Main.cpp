@@ -17,6 +17,8 @@
 #include <source_location>
 
 #include "Cube/Cube.h"
+#include "Cube/PlanetCube.h"
+#include "Cube/DysonCube.h"
 #include "Game/Game.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -74,6 +76,38 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 
     if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"Cube", L"MainShader")))
+    {
+        return 0;
+    }
+
+    std::shared_ptr<PlanetCube> planetCube = std::make_shared<PlanetCube>("brickwall.dds");
+    if (FAILED(game->GetRenderer()->AddRenderable(L"PlanetCube", planetCube)))
+    {
+        return 0;
+    }
+
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"PlanetCube", L"MainShader")))
+    {
+        return 0;
+    }
+
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"PlanetCube", L"MainShader")))
+    {
+        return 0;
+    }
+
+    std::shared_ptr<DysonCube> dysonCube = std::make_shared<DysonCube>("brickwall.dds");
+    if (FAILED(game->GetRenderer()->AddRenderable(L"DysonCube", dysonCube)))
+    {
+        return 0;
+    }
+
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"DysonCube", L"MainShader")))
+    {
+        return 0;
+    }
+
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"DysonCube", L"MainShader")))
     {
         return 0;
     }

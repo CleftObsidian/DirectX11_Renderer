@@ -8,9 +8,6 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Declare a diffuse texture and a sampler state (remove the comment)
---------------------------------------------------------------------*/
 Texture2D txDiffuse : register(t0);
 SamplerState samLinear : register(s0);
 
@@ -22,9 +19,6 @@ SamplerState samLinear : register(s0);
 
   Summary:  Constant buffer used for view transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangeOnCameraMovement definition (remove the comment)
---------------------------------------------------------------------*/
 cbuffer cbChangeOnCameraMovement : register(b0)
 {
     matrix View;
@@ -35,9 +29,6 @@ cbuffer cbChangeOnCameraMovement : register(b0)
 
   Summary:  Constant buffer used for projection transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangeOnResize definition (remove the comment)
---------------------------------------------------------------------*/
 cbuffer cbChangeOnResize : register(b1)
 {
     matrix Projection;
@@ -48,13 +39,9 @@ cbuffer cbChangeOnResize : register(b1)
 
   Summary:  Constant buffer used for world transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangesEveryFrame definition (remove the comment)
---------------------------------------------------------------------*/
 cbuffer cbChangesEveryFrame : register(b2)
 {
     matrix World;
-    float4 vMeshColor;
 }
 
 //--------------------------------------------------------------------------------------
@@ -63,9 +50,6 @@ cbuffer cbChangesEveryFrame : register(b2)
 
   Summary:  Used as the input to the vertex shader
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: VS_INPUT definition (remove the comment)
---------------------------------------------------------------------*/
 struct VS_INPUT
 {
     float4 Pos : POSITION;
@@ -78,9 +62,6 @@ struct VS_INPUT
   Summary:  Used as the input to the pixel shader, output of the 
             vertex shader
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: PS_INPUT definition (remove the comment)
---------------------------------------------------------------------*/
 struct PS_INPUT
 {
     float4 Pos : SV_POSITION;
@@ -90,15 +71,12 @@ struct PS_INPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Vertex Shader function VS definition (remove the comment)
---------------------------------------------------------------------*/
-PS_INPUT VS( VS_INPUT input )
+PS_INPUT VS(VS_INPUT input)
 {
     PS_INPUT output = (PS_INPUT)0;
-    output.Pos = mul( input.Pos, World );
-    output.Pos = mul( output.Pos, View );
-    output.Pos = mul( output.Pos, Projection );
+    output.Pos = mul(input.Pos, World);
+    output.Pos = mul(output.Pos, View);
+    output.Pos = mul(output.Pos, Projection);
     output.Tex = input.Tex;
     
     return output;
@@ -107,10 +85,7 @@ PS_INPUT VS( VS_INPUT input )
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Pixel Shader function PS definition (remove the comment)
---------------------------------------------------------------------*/
-float4 PS( PS_INPUT input) : SV_Target
+float4 PS(PS_INPUT input) : SV_Target
 {
-    return txDiffuse.Sample( samLinear, input.Tex ) * vMeshColor;
+    return txDiffuse.Sample(samLinear, input.Tex);
 }
