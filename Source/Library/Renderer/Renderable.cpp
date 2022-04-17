@@ -24,7 +24,7 @@ namespace library
         , m_vertexShader(nullptr)
         , m_pixelShader(nullptr)
         , m_textureFilePath(textureFilePath)
-        , m_world()
+        , m_world(XMMatrixIdentity())
     {
         // empty
     }
@@ -130,9 +130,6 @@ namespace library
             );
             return E_FAIL;
         }
-
-        // Initialize the world matrix
-        m_world = XMMatrixIdentity();
 
         return hr;
     }

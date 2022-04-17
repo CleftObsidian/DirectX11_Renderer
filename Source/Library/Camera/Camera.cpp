@@ -144,7 +144,8 @@ namespace library
 
         // Determines the rotation
         m_yaw += static_cast<FLOAT>(mouseRelativeMovement.X * m_rotationSpeed * deltaTime);
-        FLOAT newPitch = m_pitch + static_cast<FLOAT>(mouseRelativeMovement.Y * m_rotationSpeed * deltaTime);
+        static FLOAT newPitch = 0.0f;
+        newPitch = m_pitch + static_cast<FLOAT>(mouseRelativeMovement.Y * m_rotationSpeed * deltaTime);
 
         // Limit pitch range(-pi/2, pi/2)
         if (newPitch < -XM_PIDIV2 || newPitch > XM_PIDIV2)
@@ -226,6 +227,7 @@ namespace library
         m_eye += m_moveUpDown * m_cameraUp;
 
         m_at += m_eye;
+        m_up = m_cameraUp;
 
         // Reset movement
         m_moveBackForward = 0.0f;
