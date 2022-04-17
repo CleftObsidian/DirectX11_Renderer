@@ -80,5 +80,8 @@
     <Image Include="brickwall.dds">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="rainbow.dds">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

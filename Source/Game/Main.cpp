@@ -96,7 +96,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-    std::shared_ptr<DysonCube> dysonCube = std::make_shared<DysonCube>("brickwall.dds");
+    std::shared_ptr<DysonCube> dysonCube = std::make_shared<DysonCube>("rainbow.dds");
     if (FAILED(game->GetRenderer()->AddRenderable(L"DysonCube", dysonCube)))
     {
         return 0;
