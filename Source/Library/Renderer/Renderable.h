@@ -41,6 +41,10 @@ namespace library
                     Returns the texture resource view
                   GetSamplerState
                     Returns the sampler state
+                  GetOutputColor
+                    Returns the output color
+                  HasTexture
+                    Returns whether the renderable has texture
                   GetNumVertices
                     Pure virtual function that returns the number of
                     vertices
@@ -56,6 +60,7 @@ namespace library
     {
     public:
         Renderable(_In_ const std::filesystem::path& textureFilePath);
+        Renderable(_In_ const XMFLOAT4& outputColor);
         Renderable(const Renderable& other) = delete;
         Renderable(Renderable&& other) = delete;
         Renderable& operator=(const Renderable& other) = delete;
@@ -77,6 +82,8 @@ namespace library
         const XMMATRIX& GetWorldMatrix() const;
         ComPtr<ID3D11ShaderResourceView>& GetTextureResourceView();
         ComPtr<ID3D11SamplerState>& GetSamplerState();
+        const XMFLOAT4& GetOutputColor() const;
+        BOOL HasTexture() const;
 
         void RotateX(_In_ FLOAT angle);
         void RotateY(_In_ FLOAT angle);
@@ -90,7 +97,10 @@ namespace library
     protected:
         const virtual SimpleVertex* getVertices() const = 0;
         virtual const WORD* getIndices() const = 0;
-        HRESULT initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext);
+        HRESULT initialize(
+            _In_ ID3D11Device* pDevice,
+            _In_ ID3D11DeviceContext* pImmediateContext
+            );
 
         ComPtr<ID3D11Buffer> m_vertexBuffer;
         ComPtr<ID3D11Buffer> m_indexBuffer;
@@ -100,6 +110,8 @@ namespace library
         std::shared_ptr<VertexShader> m_vertexShader;
         std::shared_ptr<PixelShader> m_pixelShader;
         std::filesystem::path m_textureFilePath;
+        XMFLOAT4 m_outputColor;
+        BOOL m_bHasTextures;
         XMMATRIX m_world;
     };
 }
