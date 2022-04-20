@@ -589,7 +589,7 @@ namespace library
         m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0u, nullptr, &cbChangeOnCameraMovement, 0u, 0u);
 
         // Create lights constant buffer and update
-        D3D11_BUFFER_DESC bd =
+        bd =
         {
             .ByteWidth = sizeof(CBLights),
             .Usage = D3D11_USAGE_DEFAULT,
@@ -636,7 +636,8 @@ namespace library
             }
             CBChangesEveryFrame cbChangesEveryFrame =
             {
-                .World = XMMatrixTranspose(renderable->second->GetWorldMatrix())
+                .World = XMMatrixTranspose(renderable->second->GetWorldMatrix()),
+                .OutputColor = renderable->second->GetOutputColor()
             };
             m_immediateContext->UpdateSubresource(renderable->second->GetConstantBuffer().Get(), 0u, nullptr, &cbChangesEveryFrame, 0u, 0u);
 
@@ -661,8 +662,11 @@ namespace library
             m_immediateContext->VSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetShader(renderable->second->GetPixelShader().Get(), nullptr, 0u);
             m_immediateContext->PSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
-            m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetTextureResourceView().GetAddressOf());
-            m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetSamplerState().GetAddressOf());
+            if (renderable->second->HasTexture())
+            {
+                m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetTextureResourceView().GetAddressOf());
+                m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetSamplerState().GetAddressOf());
+            }
             m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
         }
 

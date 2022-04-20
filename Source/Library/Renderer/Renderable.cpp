@@ -29,7 +29,7 @@ namespace library
         , m_pixelShader(nullptr)
         , m_textureFilePath(textureFilePath)
         , m_outputColor(XMFLOAT4())
-        , m_bHasTextures(TRUE)
+        , m_bHasTextures(FALSE)
         , m_world(XMMatrixIdentity())
     {
         // empty
@@ -61,7 +61,7 @@ namespace library
         , m_pixelShader(nullptr)
         , m_textureFilePath(std::filesystem::path())
         , m_outputColor(outputColor)
-        , m_bHasTextures(FALSE)
+        , m_bHasTextures(TRUE)
         , m_world(XMMatrixIdentity())
     {
         // empty
@@ -136,40 +136,43 @@ namespace library
             return E_FAIL;
         }
 
-        // Load the Texture
-        hr = CreateDDSTextureFromFile(pDevice, m_textureFilePath.filename().wstring().c_str(), nullptr, m_textureRV.GetAddressOf());
-        if (FAILED(hr))
+        if (m_bHasTextures)
         {
-            MessageBox(
-                nullptr,
-                L"Call to CreateDDSTextureFromFile failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-            return E_FAIL;
-        }
+            // Load the Texture
+            hr = CreateDDSTextureFromFile(pDevice, m_textureFilePath.filename().wstring().c_str(), nullptr, m_textureRV.GetAddressOf());
+            if (FAILED(hr))
+            {
+                MessageBox(
+                    nullptr,
+                    L"Call to CreateDDSTextureFromFile failed!",
+                    L"Game Graphics Programming",
+                    NULL
+                );
+                return E_FAIL;
+            }
 
-        // Create the sample state
-        D3D11_SAMPLER_DESC sampDesc =
-        {
-            .Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
-            .AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
-            .AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
-            .AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
-            .ComparisonFunc = D3D11_COMPARISON_NEVER,
-            .MinLOD = 0.0f,
-            .MaxLOD = D3D11_FLOAT32_MAX,
-        };
-        hr = pDevice->CreateSamplerState(&sampDesc, m_samplerLinear.GetAddressOf());
-        if (FAILED(hr))
-        {
-            MessageBox(
-                nullptr,
-                L"Call to CreateSamplerState failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-            return E_FAIL;
+            // Create the sample state
+            D3D11_SAMPLER_DESC sampDesc =
+            {
+                .Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+                .AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
+                .AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
+                .AddressW = D3D11_TEXTURE_ADDRESS_WRAP,
+                .ComparisonFunc = D3D11_COMPARISON_NEVER,
+                .MinLOD = 0.0f,
+                .MaxLOD = D3D11_FLOAT32_MAX,
+            };
+            hr = pDevice->CreateSamplerState(&sampDesc, m_samplerLinear.GetAddressOf());
+            if (FAILED(hr))
+            {
+                MessageBox(
+                    nullptr,
+                    L"Call to CreateSamplerState failed!",
+                    L"Game Graphics Programming",
+                    NULL
+                );
+                return E_FAIL;
+            }
         }
 
         return hr;
