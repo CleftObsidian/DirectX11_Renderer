@@ -164,27 +164,34 @@ PS_LIGHT_CUBE_INPUT VSLightCube( VS_PHONG_INPUT input )
 float4 PSPhong( PS_PHONG_INPUT input )
 {
     // ambient
-    float3 ambient = float3(0.2f, 0.2f, 0.2f);
+    float4 ambient = 0.0f;
+    for (uint i = 0; i < NUM_LIGHTS; ++i)
+    {
+        ambient += saturate(float3(0.2f, 0.2f, 0.2f) * LightsColors[i].xyz);
+    }
+    ambient *= txDiffuse.Sample(samLinear, input.TexCoord);
 
     // diffuse
-    float3 diffuse;
-    for (uint i = 0; i < NUM_LIGHTS; ++i)
+    float4 diffuse = 0.0f;
+    for (uint j = 0; j < NUM_LIGHTS; ++j)
     {
-        float3 lightDirection = normalize(input.WorldPosition - LightPositions[i].xyz);
-        diffuse += dot(input.Normal, -lightDirection) * LightColors[i].xyz;
+        float3 lightDirection = normalize(LightPositions[j].xyz - input.WorldPosition);
+        diffuse += saturate(dot(normalize(input.Normal), lightDirection)) * LightColors[j];
     }
+    diffuse *= txDiffuse.Sample(samLinear, input.TexCoord);
 
     // specular
-    float3 viewDirection = normalize(input.WorldPosition - CameraPosition.xyz);
-    float3 specular;
-    for (uint i = 0; i < NUM_LIGHTS; ++i)
+    float3 viewDirection = normalize(CameraPosition.xyz - input.WorldPosition);
+    float4 specular = 0.0f;
+    for (uint k = 0; k < NUM_LIGHTS; ++k)
     {
-        float3 lightDirection = normalize(input.WorldPosition - LightPositions[i].xyz);
-        float3 reflectDirection = reflect(lightDirection, input.Normal);
-        specular += pow(saturate(dot(-viewDirection, reflectDirection)), 20.0f) * LightColors[i].xyz;
+        float3 lightDirection = normalize(input.WorldPosition - LightPositions[k].xyz);
+        float3 reflectDirection = reflect(lightDirection, normalize(input.Normal));
+        specular += pow(saturate(dot(reflectDirection, viewDirection)), 20.0f) * LightColors[k];
     }
+    specular *= txDiffuse.Sample(samLinear, input.TexCoord);
 
-    return float4(ambient + diffuse + specular, 1.0f) * txDiffuse.Sample(samLinear, input.TexCoord);
+    return (ambient + diffuse + specular);
 }
 
 /*--------------------------------------------------------------------

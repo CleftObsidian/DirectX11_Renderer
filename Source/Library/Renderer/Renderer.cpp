@@ -361,12 +361,31 @@ namespace library
 
         // Initialize the projection matrix
         m_projection = XMMatrixPerspectiveFovLH(XM_PIDIV2, static_cast<FLOAT>(uWidth) / static_cast<FLOAT>(uHeight), 0.01f, 100.0f);
-
         CBChangeOnResize cbChangeOnResize =
         {
             .Projection = XMMatrixTranspose(m_projection)
         };
         m_immediateContext->UpdateSubresource(m_cbChangeOnResize.Get(), 0u, nullptr, &cbChangeOnResize, 0u, 0u);
+
+        // Initialize the lights constant buffer
+        D3D11_BUFFER_DESC bdLights =
+        {
+            .ByteWidth = sizeof(CBLights),
+            .Usage = D3D11_USAGE_DEFAULT,
+            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+            .CPUAccessFlags = 0u
+        };
+        hr = m_d3dDevice->CreateBuffer(&bdLights, nullptr, m_cbLights.GetAddressOf());
+        if (FAILED(hr))
+        {
+            MessageBox(
+                nullptr,
+                L"Call to CreateLightsBuffer failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
+            return E_FAIL;
+        }
 
         return hr;
     }
@@ -586,17 +605,18 @@ namespace library
         {
             .View = XMMatrixTranspose(m_camera.GetView())
         };
+        XMStoreFloat4(&cbChangeOnCameraMovement.CameraPosition, m_camera.GetEye());
         m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0u, nullptr, &cbChangeOnCameraMovement, 0u, 0u);
 
         // Create lights constant buffer and update
-        bd =
+        D3D11_BUFFER_DESC bdLight =
         {
             .ByteWidth = sizeof(CBLights),
             .Usage = D3D11_USAGE_DEFAULT,
             .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
             .CPUAccessFlags = 0u
         };
-        if (FAILED(m_d3dDevice->CreateBuffer(&bd, nullptr, m_cbLights.GetAddressOf())))
+        if (FAILED(m_d3dDevice->CreateBuffer(&bdLight, nullptr, m_cbLights.GetAddressOf())))
         {
             MessageBox(
                 nullptr,
