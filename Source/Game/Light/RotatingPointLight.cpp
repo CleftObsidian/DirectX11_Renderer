@@ -13,7 +13,7 @@ M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 /*--------------------------------------------------------------------
   TODO: RotatingPointLight::RotatingPointLight definition (remove the comment)
 --------------------------------------------------------------------*/
-RotatingPointLight::RotatingPointLight(const XMFLOAT4& position, const XMFLOAT4& color)
+RotatingPointLight::RotatingPointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color)
     : PointLight(position, color)
 {
     // empty

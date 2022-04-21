@@ -29,7 +29,7 @@ namespace library
         , m_pixelShader(nullptr)
         , m_textureFilePath(textureFilePath)
         , m_outputColor(XMFLOAT4())
-        , m_bHasTextures(FALSE)
+        , m_bHasTextures(TRUE)
         , m_world(XMMatrixIdentity())
     {
         // empty
@@ -61,7 +61,7 @@ namespace library
         , m_pixelShader(nullptr)
         , m_textureFilePath(std::filesystem::path())
         , m_outputColor(outputColor)
-        , m_bHasTextures(TRUE)
+        , m_bHasTextures(FALSE)
         , m_world(XMMatrixIdentity())
     {
         // empty
@@ -101,7 +101,7 @@ namespace library
 
         D3D11_SUBRESOURCE_DATA InitData =
         {
-            .pSysMem = getVertices(),
+            .pSysMem = getVertices()
         };
         hr = pDevice->CreateBuffer(&bd, &InitData, m_vertexBuffer.GetAddressOf());
         if (FAILED(hr))

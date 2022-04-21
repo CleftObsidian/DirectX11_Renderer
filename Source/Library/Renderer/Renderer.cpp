@@ -367,24 +367,25 @@ namespace library
         };
         m_immediateContext->UpdateSubresource(m_cbChangeOnResize.Get(), 0u, nullptr, &cbChangeOnResize, 0u, 0u);
 
-        // Initialize the lights constant buffer
-        D3D11_BUFFER_DESC bdLights =
+        // Create the camera constant buffer
+        m_camera.Initialize(m_d3dDevice.Get());
+
+        // Create lights constant buffer
+        D3D11_BUFFER_DESC bdLight =
         {
             .ByteWidth = sizeof(CBLights),
             .Usage = D3D11_USAGE_DEFAULT,
             .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
             .CPUAccessFlags = 0u
         };
-        hr = m_d3dDevice->CreateBuffer(&bdLights, nullptr, m_cbLights.GetAddressOf());
-        if (FAILED(hr))
+        if (FAILED(m_d3dDevice->CreateBuffer(&bdLight, nullptr, m_cbLights.GetAddressOf())))
         {
             MessageBox(
                 nullptr,
-                L"Call to CreateLightsBuffer failed!",
+                L"Call to CreateCBLightsBuffer failed!",
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
         }
 
         return hr;
@@ -566,6 +567,11 @@ namespace library
         {
             renderable->second->Update(deltaTime);
         }
+
+        for (UINT i = 0u; i < NUM_LIGHTS; ++i)
+        {
+            m_aPointLights[i]->Update(deltaTime);
+        }
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -584,23 +590,7 @@ namespace library
         // Clear the depth buffer to 1.0 (max depth)
         m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 
-        // Create camera constant buffer and update
-        D3D11_BUFFER_DESC bd =
-        {
-            .ByteWidth = sizeof(CBChangeOnCameraMovement),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-            .CPUAccessFlags = 0u
-        };
-        if (FAILED(m_d3dDevice->CreateBuffer(&bd, nullptr, m_camera.GetConstantBuffer().GetAddressOf())))
-        {
-            MessageBox(
-                nullptr,
-                L"Call to CreateChangeOnCameraMovementBuffer failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-        }
+        // Update camera constant buffer
         CBChangeOnCameraMovement cbChangeOnCameraMovement =
         {
             .View = XMMatrixTranspose(m_camera.GetView())
@@ -608,25 +598,9 @@ namespace library
         XMStoreFloat4(&cbChangeOnCameraMovement.CameraPosition, m_camera.GetEye());
         m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0u, nullptr, &cbChangeOnCameraMovement, 0u, 0u);
 
-        // Create lights constant buffer and update
-        D3D11_BUFFER_DESC bdLight =
-        {
-            .ByteWidth = sizeof(CBLights),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-            .CPUAccessFlags = 0u
-        };
-        if (FAILED(m_d3dDevice->CreateBuffer(&bdLight, nullptr, m_cbLights.GetAddressOf())))
-        {
-            MessageBox(
-                nullptr,
-                L"Call to CreateCBLightsBuffer failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-        }
+        // Update lights constant buffer
         CBLights cbLights = {};
-        for (UINT i = 0; i < NUM_LIGHTS; ++i)
+        for (UINT i = 0u; i < NUM_LIGHTS; ++i)
         {
             cbLights.LightPositions[i] = m_aPointLights[i]->GetPosition();
             cbLights.LightColors[i] = m_aPointLights[i]->GetColor();
@@ -680,13 +654,16 @@ namespace library
             m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
+
             m_immediateContext->PSSetShader(renderable->second->GetPixelShader().Get(), nullptr, 0u);
             m_immediateContext->PSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
             if (renderable->second->HasTexture())
             {
                 m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetTextureResourceView().GetAddressOf());
                 m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetSamplerState().GetAddressOf());
             }
+
             m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
         }
 

@@ -161,18 +161,18 @@ PS_LIGHT_CUBE_INPUT VSLightCube( VS_PHONG_INPUT input )
 /*--------------------------------------------------------------------
   TODO: Pixel Shader function PSPhong definition (remove the comment)
 --------------------------------------------------------------------*/
-float4 PSPhong( PS_PHONG_INPUT input )
+float4 PSPhong( PS_PHONG_INPUT input ) : SV_TARGET
 {
     // ambient
-    float4 ambient = 0.0f;
+    float3 ambient = float3(0.0f, 0.0f, 0.0f);
     for (uint i = 0; i < NUM_LIGHTS; ++i)
     {
-        ambient += saturate(float3(0.2f, 0.2f, 0.2f) * LightsColors[i].xyz);
+        ambient += float4(float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz, 1.0f);
     }
     ambient *= txDiffuse.Sample(samLinear, input.TexCoord);
 
     // diffuse
-    float4 diffuse = 0.0f;
+    float3 diffuse = float3(0.0f, 0.0f, 0.0f);
     for (uint j = 0; j < NUM_LIGHTS; ++j)
     {
         float3 lightDirection = normalize(LightPositions[j].xyz - input.WorldPosition);
@@ -182,16 +182,16 @@ float4 PSPhong( PS_PHONG_INPUT input )
 
     // specular
     float3 viewDirection = normalize(CameraPosition.xyz - input.WorldPosition);
-    float4 specular = 0.0f;
+    float3 specular = float3(0.0f, 0.0f, 0.0f);
     for (uint k = 0; k < NUM_LIGHTS; ++k)
     {
-        float3 lightDirection = normalize(input.WorldPosition - LightPositions[k].xyz);
-        float3 reflectDirection = reflect(lightDirection, normalize(input.Normal));
-        specular += pow(saturate(dot(reflectDirection, viewDirection)), 20.0f) * LightColors[k];
+        float3 lightDirection = normalize(LightPositions[k].xyz - input.WorldPosition);
+        float3 reflectDirection = reflect(-lightDirection, normalize(input.Normal));
+        specular += pow(saturate(dot(reflectDirection, viewDirection)), 4.0f) * LightColors[k];
     }
     specular *= txDiffuse.Sample(samLinear, input.TexCoord);
 
-    return (ambient + diffuse + specular);
+    return float4(specular, 1.0f);
 }
 
 /*--------------------------------------------------------------------
