@@ -19,6 +19,7 @@
 #include "Cube/Cube.h"
 #include "Cube/RotatingCube.h"
 #include "Light/RotatingPointLight.h"
+#include "Cube/SunCube.h"
 #include "Game/Game.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -130,7 +131,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-    std::shared_ptr<Cube> phongCube = std::make_shared<Cube>(L"mollu.dds");
+    std::shared_ptr<Cube> phongCube = std::make_shared<Cube>(L"seafloor.dds");
     if (FAILED(game->GetRenderer()->AddRenderable(L"PhongCube", phongCube)))
     {
         return 0;
@@ -140,6 +141,21 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
     if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"PhongCube", L"PhongShader")))
+    {
+        return 0;
+    }
+
+    std::shared_ptr<SunCube> phongSunCube = std::make_shared<SunCube>(L"mollu.dds");
+    phongSunCube->Translate(XMVectorSet(0.0f, -2.0f, 0.0f, 0.0f));
+    if (FAILED(game->GetRenderer()->AddRenderable(L"PhongSunCube", phongSunCube)))
+    {
+        return 0;
+    }
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"PhongSunCube", L"PhongShader")))
+    {
+        return 0;
+    }
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"PhongSunCube", L"PhongShader")))
     {
         return 0;
     }

@@ -1,7 +1,12 @@
 #include "Cube/SunCube.h"
 
+SunCube::SunCube(const std::filesystem::path& textureFilePath)
+	: BaseCube(textureFilePath)
+{
+	// empty
+}
+
 void SunCube::Update(_In_ FLOAT deltaTime)
 {
-	// Rotate around the origin
-	RotateY(deltaTime);
+	// Does nothing
 }

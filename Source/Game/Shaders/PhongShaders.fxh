@@ -106,7 +106,8 @@ PS_PHONG_INPUT VSPhong( VS_PHONG_INPUT input )
     output.Position = mul( output.Position, View );
     output.Position = mul( output.Position, Projection );
 
-    output.Normal = normalize(mul( float4( input.Normal, 1 ), World ).xyz);
+    //output.Normal = normalize(mul( float4( input.Normal, 1 ), World ).xyz);
+    output.Normal = input.Normal;
 
     output.WorldPosition = mul( input.Position, World );
 
@@ -139,10 +140,11 @@ float4 PSPhong( PS_PHONG_INPUT input ) : SV_TARGET
     ambient *= txDiffuse.Sample(samLinear, input.TexCoord);
 
     // diffuse
+    float3 lightDirection = float3(0.0f, 0.0f, 0.0f);
     float3 diffuse = float3(0.0f, 0.0f, 0.0f);
     for (uint j = 0; j < NUM_LIGHTS; ++j)
     {
-        float3 lightDirection = normalize(LightPositions[j].xyz - input.WorldPosition);
+        lightDirection = normalize(LightPositions[j].xyz - input.WorldPosition);
         diffuse += saturate(dot(normalize(input.Normal), lightDirection)) * LightColors[j];
     }
     diffuse *= txDiffuse.Sample(samLinear, input.TexCoord);
@@ -150,11 +152,13 @@ float4 PSPhong( PS_PHONG_INPUT input ) : SV_TARGET
     // specular
     float3 viewDirection = normalize(CameraPosition.xyz - input.WorldPosition);
     float3 specular = float3(0.0f, 0.0f, 0.0f);
+    float3 reflectDirection = float3(0.0f, 0.0f, 0.0f);
+    float shiness = 20.0f;
     for (uint k = 0; k < NUM_LIGHTS; ++k)
     {
-        float3 lightDirection = normalize(LightPositions[k].xyz - input.WorldPosition);
-        float3 reflectDirection = reflect(-lightDirection, normalize(input.Normal));
-        specular += pow(saturate(dot(reflectDirection, viewDirection)), 4.0f) * LightColors[k];
+        lightDirection = normalize(LightPositions[k].xyz - input.WorldPosition);
+        reflectDirection = reflect(-lightDirection, normalize(input.Normal));
+        specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * LightColors[k];
     }
     specular *= txDiffuse.Sample(samLinear, input.TexCoord);
 

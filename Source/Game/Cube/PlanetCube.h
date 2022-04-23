@@ -5,6 +5,7 @@
 class PlanetCube final : public BaseCube
 {
 public:
+    PlanetCube() = delete;
     PlanetCube(const std::filesystem::path& textureFilePath);
     PlanetCube(const PlanetCube& other) = delete;
     PlanetCube(PlanetCube&& other) = delete;
