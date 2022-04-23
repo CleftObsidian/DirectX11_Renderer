@@ -117,7 +117,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 
     std::shared_ptr<RotatingCube> rotatingLightCube = std::make_shared<RotatingCube>(color);
-    rotatingLightCube->Translate(XMVectorSet(0.0f, 0.0f, -5.0f, 0.0f));
+    rotatingLightCube->Translate(XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f));
     if (FAILED(game->GetRenderer()->AddRenderable(L"RotatingLightCube", rotatingLightCube)))
     {
         return 0;
@@ -146,7 +146,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 
     std::shared_ptr<SunCube> phongSunCube = std::make_shared<SunCube>(L"mollu.dds");
-    phongSunCube->Translate(XMVectorSet(0.0f, -2.0f, 0.0f, 0.0f));
+    phongSunCube->Translate(XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f));
     if (FAILED(game->GetRenderer()->AddRenderable(L"PhongSunCube", phongSunCube)))
     {
         return 0;
