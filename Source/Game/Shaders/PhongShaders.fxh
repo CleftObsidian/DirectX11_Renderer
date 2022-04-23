@@ -106,7 +106,6 @@ PS_PHONG_INPUT VSPhong( VS_PHONG_INPUT input )
     output.Position = mul( output.Position, View );
     output.Position = mul( output.Position, Projection );
 
-    //output.Normal = normalize(mul( float4( input.Normal, 1 ), World ).xyz);
     output.Normal = input.Normal;
 
     output.WorldPosition = mul( input.Position, World );
