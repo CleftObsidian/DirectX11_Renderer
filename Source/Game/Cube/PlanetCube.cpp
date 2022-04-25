@@ -1,11 +1,29 @@
 #include "Cube/PlanetCube.h"
 
+/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+  Method:   PlanetCube::PlanetCube
+
+  Summary:  Constructor
+
+  Args:     const std::filesystem::path& textureFilePath
+			  Path to the texture to use
+M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 PlanetCube::PlanetCube(const std::filesystem::path& textureFilePath)
 	: BaseCube(textureFilePath)
 {
 	// empty
 }
 
+/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+  Method:   PlanetCube::Update
+
+  Summary:  Updates the cube every frame
+
+  Args:     FLOAT deltaTime
+			  Elapsed time
+
+  Modifies: [m_world].
+M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 void PlanetCube::Update(_In_ FLOAT deltaTime)
 {
 	// Add time

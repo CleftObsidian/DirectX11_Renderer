@@ -24,7 +24,7 @@ cbuffer cbChangeOnCameraMovement : register(b0)
 {
     matrix View;
     float4 CameraPosition;
-}
+};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbChangeOnResize
@@ -45,7 +45,7 @@ cbuffer cbChangesEveryFrame : register(b2)
 {
     matrix World;
     float4 OutputColor;
-}
+};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbLights
@@ -136,7 +136,6 @@ float4 PSPhong( PS_PHONG_INPUT input ) : SV_TARGET
     {
         ambient += float4(float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz, 1.0f);
     }
-    ambient *= txDiffuse.Sample(samLinear, input.TexCoord);
 
     // diffuse
     float3 lightDirection = float3(0.0f, 0.0f, 0.0f);
@@ -146,7 +145,6 @@ float4 PSPhong( PS_PHONG_INPUT input ) : SV_TARGET
         lightDirection = normalize(LightPositions[j].xyz - input.WorldPosition);
         diffuse += saturate(dot(normalize(input.Normal), lightDirection)) * LightColors[j];
     }
-    diffuse *= txDiffuse.Sample(samLinear, input.TexCoord);
 
     // specular
     float3 viewDirection = normalize(CameraPosition.xyz - input.WorldPosition);
@@ -159,9 +157,8 @@ float4 PSPhong( PS_PHONG_INPUT input ) : SV_TARGET
         reflectDirection = reflect(-lightDirection, normalize(input.Normal));
         specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * LightColors[k];
     }
-    specular *= txDiffuse.Sample(samLinear, input.TexCoord);
 
-    return float4(ambient + diffuse + specular, 1.0f);
+    return float4(ambient + diffuse + specular, 1.0f) * txDiffuse.Sample(samLinear, input.TexCoord);
 }
 
 float4 PSLightCube( PS_LIGHT_CUBE_INPUT input ) : SV_TARGET

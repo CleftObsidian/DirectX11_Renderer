@@ -1,11 +1,29 @@
 #include "Cube/DysonCube.h"
 
+/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+  Method:   DysonCube::DysonCube
+
+  Summary:  Constructor
+
+  Args:     const std::filesystem::path& textureFilePath
+			  Path to the texture to use
+M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 DysonCube::DysonCube(const std::filesystem::path& textureFilePath)
 	: BaseCube(textureFilePath)
 {
 	// empty
 }
 
+/*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+  Method:   DysonCube::Update
+
+  Summary:  Updates the cube every frame
+
+  Args:     FLOAT deltaTime
+			  Elapsed time
+
+  Modifies: [m_world].
+M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
 void DysonCube::Update(_In_ FLOAT deltaTime)
 {
 	// Add time

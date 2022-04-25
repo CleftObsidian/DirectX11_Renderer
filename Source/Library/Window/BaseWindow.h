@@ -240,7 +240,9 @@ namespace library
         // Create window
         RECT rc = { 0, 0, nWidth, nHeight };
         AdjustWindowRect(&rc, WS_OVERLAPPEDWINDOW, FALSE);
-        m_hWnd = CreateWindowEx(0,
+        m_hWnd = CreateWindowEx
+        (
+            0,
             GetWindowClassName(),
             m_pszWindowName,
             dwStyle,
@@ -251,7 +253,8 @@ namespace library
             hWndParent,
             hMenu,
             m_hInstance,
-            this);
+            this
+        );
 
         if (!m_hWnd)
         {

@@ -584,23 +584,7 @@ namespace library
         std::unordered_map<std::wstring, std::shared_ptr<Renderable>>::iterator renderable;
         for (renderable = m_renderables.begin(); renderable != m_renderables.end(); ++renderable)
         {
-            // Create renderable constant buffer and update
-            D3D11_BUFFER_DESC bd =
-            {
-                .ByteWidth = sizeof(CBChangesEveryFrame),
-                .Usage = D3D11_USAGE_DEFAULT,
-                .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-                .CPUAccessFlags = 0u
-            };
-            if (FAILED(m_d3dDevice->CreateBuffer(&bd, nullptr, renderable->second->GetConstantBuffer().GetAddressOf())))
-            {
-                MessageBox(
-                    nullptr,
-                    L"Call to CreateChangesEveryFrameBuffer failed!",
-                    L"Game Graphics Programming",
-                    NULL
-                );
-            }
+            // Update renderable constant buffer
             CBChangesEveryFrame cbChangesEveryFrame =
             {
                 .World = XMMatrixTranspose(renderable->second->GetWorldMatrix()),
@@ -622,22 +606,28 @@ namespace library
             // Set the input layout
             m_immediateContext->IASetInputLayout(renderable->second->GetVertexLayout().Get());
 
-            // Render the triangles
+            // Set the vertex shader and constant buffers
             m_immediateContext->VSSetShader(renderable->second->GetVertexShader().Get(), nullptr, 0u);
             m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
 
+            // Set the pixel shader and constant buffers
             m_immediateContext->PSSetShader(renderable->second->GetPixelShader().Get(), nullptr, 0u);
             m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
             m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
+
             if (renderable->second->HasTexture())
             {
+                // Set texture resource view of the renderable into the pixel shader
                 m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetTextureResourceView().GetAddressOf());
+
+                // Set sampler state of the renderable into the pixel shader
                 m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetSamplerState().GetAddressOf());
             }
 
+            // Render the triangles
             m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
         }
 
@@ -683,7 +673,7 @@ namespace library
             return E_FAIL;
         }
 
-        m_renderables.find(pszRenderableName)->second->SetVertexShader(m_vertexShaders.find(pszVertexShaderName)->second);
+        m_renderables[pszRenderableName]->SetVertexShader(m_vertexShaders[pszVertexShaderName]);
 
         return S_OK;
     }
@@ -726,7 +716,7 @@ namespace library
             return E_FAIL;
         }
 
-        m_renderables.find(pszRenderableName)->second->SetPixelShader(m_pixelShaders.find(pszPixelShaderName)->second);
+        m_renderables[pszRenderableName]->SetPixelShader(m_pixelShaders[pszPixelShaderName]);
 
         return S_OK;
     }

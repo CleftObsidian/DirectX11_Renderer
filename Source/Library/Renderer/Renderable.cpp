@@ -79,22 +79,27 @@ namespace library
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     HRESULT Renderable::initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
+        UNREFERENCED_PARAMETER(pImmediateContext);
         HRESULT hr = S_OK;
 
         // Create vertex buffer
-        D3D11_BUFFER_DESC bd =
+        D3D11_BUFFER_DESC vBufferDesc =
         {
             .ByteWidth = sizeof(SimpleVertex) * GetNumVertices(),
             .Usage = D3D11_USAGE_DEFAULT,
             .BindFlags = D3D11_BIND_VERTEX_BUFFER,
-            .CPUAccessFlags = 0u
+            .CPUAccessFlags = 0u,
+            .MiscFlags = 0u,
+            .StructureByteStride = 0u
         };
 
-        D3D11_SUBRESOURCE_DATA InitData =
+        D3D11_SUBRESOURCE_DATA vInitData =
         {
-            .pSysMem = getVertices()
+            .pSysMem = getVertices(),
+            .SysMemPitch = 0u,
+            .SysMemSlicePitch = 0u
         };
-        hr = pDevice->CreateBuffer(&bd, &InitData, m_vertexBuffer.GetAddressOf());
+        hr = pDevice->CreateBuffer(&vBufferDesc, &vInitData, m_vertexBuffer.GetAddressOf());
         if (FAILED(hr))
         {
             MessageBox(
@@ -107,15 +112,22 @@ namespace library
         }
 
         // Create index buffer
-        bd =
+        D3D11_BUFFER_DESC iBufferDesc =
         {
             .ByteWidth = static_cast<UINT>(sizeof(WORD)) * GetNumIndices(),
             .Usage = D3D11_USAGE_DEFAULT,
             .BindFlags = D3D11_BIND_INDEX_BUFFER,
-            .CPUAccessFlags = 0u
+            .CPUAccessFlags = 0u,
+            .MiscFlags = 0u,
+            .StructureByteStride = 0u
         };
-        InitData.pSysMem = getIndices();
-        hr = pDevice->CreateBuffer(&bd, &InitData, m_indexBuffer.GetAddressOf());
+        D3D11_SUBRESOURCE_DATA iInitData =
+        {
+            .pSysMem = getIndices(),
+            .SysMemPitch = 0u,
+            .SysMemSlicePitch = 0u
+        };
+        hr = pDevice->CreateBuffer(&iBufferDesc, &iInitData, m_indexBuffer.GetAddressOf());
         if (FAILED(hr))
         {
             MessageBox(
@@ -125,6 +137,37 @@ namespace library
                 NULL
             );
             return E_FAIL;
+        }
+
+        // Create the constant buffer
+        D3D11_BUFFER_DESC cBufferDesc =
+        {
+            .ByteWidth = sizeof(CBChangesEveryFrame),
+            .Usage = D3D11_USAGE_DEFAULT,
+            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
+            .CPUAccessFlags = 0u,
+            .MiscFlags = 0u,
+            .StructureByteStride = 0u
+        };
+        CBChangesEveryFrame cbChangesEveryFrame =
+        {
+            .World = XMMatrixTranspose(m_world),
+            .OutputColor = m_outputColor
+        };
+        D3D11_SUBRESOURCE_DATA cInitData =
+        {
+            .pSysMem = &cbChangesEveryFrame,
+            .SysMemPitch = 0u,
+            .SysMemSlicePitch = 0u
+        };
+        if (FAILED(pDevice->CreateBuffer(&cBufferDesc, &cInitData, m_constantBuffer.GetAddressOf())))
+        {
+            MessageBox(
+                nullptr,
+                L"Call to CreateChangesEveryFrameBuffer failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
         }
 
         if (m_bHasTextures)

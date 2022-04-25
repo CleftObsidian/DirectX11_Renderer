@@ -3,6 +3,20 @@
 namespace library
 {
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+        Method:   MainWindow::MainWindow
+
+        Summary:  Constructor
+
+        Modifies: [m_directions, m_mouseRelativeMovement].
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    MainWindow::MainWindow()
+        : m_directions(DirectionsInput())
+        , m_mouseRelativeMovement(MouseRelativeMovement())
+    {
+        // empty
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   MainWindow::Initialize
 
       Summary:  Initializes main window

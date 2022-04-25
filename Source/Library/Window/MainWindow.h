@@ -43,7 +43,7 @@ namespace library
     class MainWindow : public BaseWindow<MainWindow>
     {
     public:
-        MainWindow() = default;
+        MainWindow();
         MainWindow(const MainWindow& other) = delete;
         MainWindow(MainWindow&& other) = delete;
         MainWindow& operator=(const MainWindow& other) = delete;
@@ -63,4 +63,3 @@ namespace library
         MouseRelativeMovement m_mouseRelativeMovement;
     };
 }
-
