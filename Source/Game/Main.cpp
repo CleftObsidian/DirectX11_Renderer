@@ -6,21 +6,20 @@
   Origin:    http://msdn.microsoft.com/en-us/library/windows/apps/ff729718.aspx
 
   Originally created by Microsoft Corporation under MIT License
-  © 2022 Kyung Hee University
+  ?2022 Kyung Hee University
 ===================================================================+*/
 
 #include "Common.h"
 
 #include <cstdio>
-#include <filesystem>
 #include <memory>
-#include <source_location>
+
+#include "Game/Game.h"
 
 #include "Cube/Cube.h"
 #include "Cube/RotatingCube.h"
 #include "Light/RotatingPointLight.h"
-#include "Cube/SunCube.h"
-#include "Game/Game.h"
+#include "Model/Model.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Function: wWinMain
@@ -52,14 +51,8 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    std::unique_ptr<library::Game> game = std::make_unique<library::Game>(L"Game Graphics Programming Lab 06: Lighting");
+    std::unique_ptr<library::Game> game = std::make_unique<library::Game>(L"Game Graphics Programming Lab 07: Modeling");
 
-    // Phong
-    std::shared_ptr<library::VertexShader> phongVertexShader = std::make_shared<library::VertexShader>(L"Shaders/PhongShaders.fxh", "VSPhong", "vs_5_0");
-    if (FAILED(game->GetRenderer()->AddVertexShader(L"PhongShader", phongVertexShader)))
-    {
-        return 0;
-    }
     // Light Cube
     std::shared_ptr<library::VertexShader> lightVertexShader = std::make_shared<library::VertexShader>(L"Shaders/PhongShaders.fxh", "VSLightCube", "vs_5_0");
     if (FAILED(game->GetRenderer()->AddVertexShader(L"LightShader", lightVertexShader)))
@@ -67,12 +60,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-    // Phong
-    std::shared_ptr<library::PixelShader> phongPixelShader = std::make_shared<library::PixelShader>(L"Shaders/PhongShaders.fxh", "PSPhong", "ps_5_0");
-    if (FAILED(game->GetRenderer()->AddPixelShader(L"PhongShader", phongPixelShader)))
-    {
-        return 0;
-    }
     // Light Cube
     std::shared_ptr<library::PixelShader> lightPixelShader = std::make_shared<library::PixelShader>(L"Shaders/PhongShaders.fxh", "PSLightCube", "ps_5_0");
     if (FAILED(game->GetRenderer()->AddPixelShader(L"LightShader", lightPixelShader)))
@@ -80,13 +67,31 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
+    /*--------------------------------------------------------------------
+      TODO: Add a model and its vertex/pixel shader (remove the comment)
+    --------------------------------------------------------------------*/
+    std::shared_ptr<library::Model> model = std::make_shared<library::Model>(L"seafloor.dds");
+    if (FAILED(game->GetRenderer()->AddRenderable(L"YEAH", model)))
+    {
+        return 0;
+    }
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"YEAH", L"PhongShader")))
+    {
+        return 0;
+    }
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"YEAH", L"PhongShader")))
+    {
+        return 0;
+    }
+
     XMFLOAT4 color;
     XMStoreFloat4(&color, Colors::White);
-    std::shared_ptr<library::PointLight> pointLight = std::make_shared<library::PointLight>(
-        XMFLOAT4(-5.77f, 5.77f, -5.77f, 1.0f), 
+
+    std::shared_ptr<library::PointLight> directionalLight = std::make_shared<library::PointLight>(
+        XMFLOAT4(-5.77f, 5.77f, -5.77f, 1.0f),
         color
         );
-    if (FAILED(game->GetRenderer()->AddPointLight(0u, pointLight)))
+    if (FAILED(game->GetRenderer()->AddPointLight(0, directionalLight)))
     {
         return 0;
     }
@@ -107,17 +112,17 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 
     XMStoreFloat4(&color, Colors::Red);
-    std::shared_ptr<RotatingPointLight> rotatingPointLight = std::make_shared<RotatingPointLight>(
+    std::shared_ptr<RotatingPointLight> rotatingDirectionalLight = std::make_shared<RotatingPointLight>(
         XMFLOAT4(0.0f, 0.0f, -5.0f, 1.0f),
         color
         );
-    if (FAILED(game->GetRenderer()->AddPointLight(1u, rotatingPointLight)))
+    if (FAILED(game->GetRenderer()->AddPointLight(1, rotatingDirectionalLight)))
     {
         return 0;
     }
 
     std::shared_ptr<RotatingCube> rotatingLightCube = std::make_shared<RotatingCube>(color);
-    rotatingLightCube->Translate(XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f));
+    rotatingLightCube->Translate(XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f));
     if (FAILED(game->GetRenderer()->AddRenderable(L"RotatingLightCube", rotatingLightCube)))
     {
         return 0;
@@ -127,35 +132,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
     if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"RotatingLightCube", L"LightShader")))
-    {
-        return 0;
-    }
-
-    std::shared_ptr<Cube> phongCube = std::make_shared<Cube>(L"seafloor.dds");
-    if (FAILED(game->GetRenderer()->AddRenderable(L"PhongCube", phongCube)))
-    {
-        return 0;
-    }
-    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"PhongCube", L"PhongShader")))
-    {
-        return 0;
-    }
-    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"PhongCube", L"PhongShader")))
-    {
-        return 0;
-    }
-
-    std::shared_ptr<SunCube> phongSunCube = std::make_shared<SunCube>(L"mollu.dds");
-    phongSunCube->Translate(XMVectorSet(0.0f, 4.0f, 0.0f, 0.0f));
-    if (FAILED(game->GetRenderer()->AddRenderable(L"PhongSunCube", phongSunCube)))
-    {
-        return 0;
-    }
-    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"PhongSunCube", L"PhongShader")))
-    {
-        return 0;
-    }
-    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"PhongSunCube", L"PhongShader")))
     {
         return 0;
     }

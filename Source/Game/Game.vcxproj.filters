@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Source Files\Shaders">
-      <UniqueIdentifier>{c9a896ea-85be-4eec-8436-7e4107d419a9}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Cube">
       <UniqueIdentifier>{8648c3c5-e412-46e0-8052-4c6d86967172}</UniqueIdentifier>
     </Filter>
@@ -27,6 +24,9 @@
     </Filter>
     <Filter Include="Source Files\Light">
       <UniqueIdentifier>{9a1de9e0-e4d6-4423-a653-6e4f275525a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{c9a896ea-85be-4eec-8436-7e4107d419a9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -57,18 +57,18 @@
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders\PS.hlsl">
-      <Filter>Source Files\Shaders</Filter>
+      <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Shaders\VS.hlsl">
-      <Filter>Source Files\Shaders</Filter>
+      <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\Shaders.fxh">
-      <Filter>Source Files\Shaders</Filter>
+      <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\PhongShaders.fxh">
-      <Filter>Source Files\Shaders</Filter>
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
