@@ -51,7 +51,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Create the pixel shader
@@ -64,7 +64,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         return hr;

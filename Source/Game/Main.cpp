@@ -70,16 +70,28 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     /*--------------------------------------------------------------------
       TODO: Add a model and its vertex/pixel shader (remove the comment)
     --------------------------------------------------------------------*/
-    std::shared_ptr<library::Model> model = std::make_shared<library::Model>(L"seafloor.dds");
-    if (FAILED(game->GetRenderer()->AddRenderable(L"YEAH", model)))
+    std::shared_ptr<library::VertexShader> phongVertexShader = std::make_shared<library::VertexShader>(L"Shaders/PhongShaders.fxh", "VSPhong", "vs_5_0");
+    if (FAILED(game->GetRenderer()->AddVertexShader(L"PhongShader", phongVertexShader)))
     {
         return 0;
     }
-    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"YEAH", L"PhongShader")))
+
+    std::shared_ptr<library::PixelShader> phongPixelShader = std::make_shared<library::PixelShader>(L"Shaders/PhongShaders.fxh", "PSPhong", "ps_5_0");
+    if (FAILED(game->GetRenderer()->AddPixelShader(L"PhongShader", phongPixelShader)))
     {
         return 0;
     }
-    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"YEAH", L"PhongShader")))
+
+    std::shared_ptr<library::Model> temple = std::make_shared<library::Model>(L"Japanese_Temple/Japanese_Temple.obj");
+    if (FAILED(game->GetRenderer()->AddRenderable(L"Temple", temple)))
+    {
+        return 0;
+    }
+    if (FAILED(game->GetRenderer()->SetVertexShaderOfRenderable(L"Temple", L"PhongShader")))
+    {
+        return 0;
+    }
+    if (FAILED(game->GetRenderer()->SetPixelShaderOfRenderable(L"Temple", L"PhongShader")))
     {
         return 0;
     }

@@ -104,10 +104,7 @@
   <ItemGroup>
     <ClCompile Include="Cube\BaseCube.cpp" />
     <ClCompile Include="Cube\Cube.cpp" />
-    <ClCompile Include="Cube\DysonCube.cpp" />
-    <ClCompile Include="Cube\PlanetCube.cpp" />
     <ClCompile Include="Cube\RotatingCube.cpp" />
-    <ClCompile Include="Cube\SunCube.cpp" />
     <ClCompile Include="Light\RotatingPointLight.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
@@ -122,10 +119,7 @@
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h" />
     <ClInclude Include="Cube\Cube.h" />
-    <ClInclude Include="Cube\DysonCube.h" />
-    <ClInclude Include="Cube\PlanetCube.h" />
     <ClInclude Include="Cube\RotatingCube.h" />
-    <ClInclude Include="Cube\SunCube.h" />
     <ClInclude Include="Light\RotatingPointLight.h" />
   </ItemGroup>
   <ItemGroup>

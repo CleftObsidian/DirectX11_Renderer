@@ -40,7 +40,7 @@ namespace library
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderable::initialize
 
-      Summary:  Initializes the buffers, texture, and the world matrix
+      Summary:  Initializes the buffers and the world matrix
 
       Args:     ID3D11Device* pDevice
                   The Direct3D device to create the buffers
@@ -86,7 +86,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Create index buffer
@@ -114,7 +114,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Create the constant buffer

@@ -1,5 +1,4 @@
 #include "Texture.h"
-
 #include "Texture/WICTextureLoader.h"
 
 namespace library
@@ -54,7 +53,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Create the sample state
@@ -77,7 +76,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         return hr;

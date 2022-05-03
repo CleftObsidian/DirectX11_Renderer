@@ -36,15 +36,6 @@
     <ClCompile Include="Cube\BaseCube.cpp">
       <Filter>Source Files\Cube</Filter>
     </ClCompile>
-    <ClCompile Include="Cube\PlanetCube.cpp">
-      <Filter>Source Files\Cube</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube\SunCube.cpp">
-      <Filter>Source Files\Cube</Filter>
-    </ClCompile>
-    <ClCompile Include="Cube\DysonCube.cpp">
-      <Filter>Source Files\Cube</Filter>
-    </ClCompile>
     <ClCompile Include="Cube\Cube.cpp">
       <Filter>Source Files\Cube</Filter>
     </ClCompile>
@@ -73,15 +64,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h">
-      <Filter>Header Files\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\PlanetCube.h">
-      <Filter>Header Files\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\SunCube.h">
-      <Filter>Header Files\Cube</Filter>
-    </ClInclude>
-    <ClInclude Include="Cube\DysonCube.h">
       <Filter>Header Files\Cube</Filter>
     </ClInclude>
     <ClInclude Include="Cube\Cube.h">

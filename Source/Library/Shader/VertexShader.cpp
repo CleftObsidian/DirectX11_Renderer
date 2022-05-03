@@ -52,7 +52,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Create the vertex shader
@@ -65,7 +65,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Define the input layout
@@ -111,7 +111,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         return hr;

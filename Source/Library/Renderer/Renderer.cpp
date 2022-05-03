@@ -137,7 +137,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Obtain DXGI factory from device
@@ -161,7 +161,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Create swap chain
@@ -223,7 +223,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Create a render target view
@@ -237,7 +237,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         hr = m_d3dDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, m_renderTargetView.GetAddressOf());
@@ -249,7 +249,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Create depth stencil texture
@@ -276,7 +276,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Create the depth stencil view
@@ -295,7 +295,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         m_immediateContext->OMSetRenderTargets(1u, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
@@ -350,7 +350,7 @@ namespace library
                 L"Game Graphics Programming",
                 NULL
             );
-            return E_FAIL;
+            return hr;
         }
 
         // Initialize the projection matrix
@@ -620,15 +620,26 @@ namespace library
 
             if (renderable->second->HasTexture())
             {
-                // Set texture resource view of the renderable into the pixel shader
-                m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetTextureResourceView().GetAddressOf());
+                for (UINT i = 0u; i < renderable->second->GetNumMeshes(); ++i)
+                {
+                    const UINT materialIndex = renderable->second->GetMesh(i).uMaterialIndex;
+                    // Set texture resource view of the renderable into the pixel shader
+                    m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetMaterial(materialIndex).pDiffuse->GetTextureResourceView().GetAddressOf());
 
-                // Set sampler state of the renderable into the pixel shader
-                m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetSamplerState().GetAddressOf());
+                    // Set sampler state of the renderable into the pixel shader
+                    m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetMaterial(materialIndex).pDiffuse->GetSamplerState().GetAddressOf());
+
+                    // Render the triangles
+                    m_immediateContext->DrawIndexed(renderable->second->GetMesh(i).uNumIndices,
+                                                    renderable->second->GetMesh(i).uBaseIndex,
+                                                    renderable->second->GetMesh(i).uBaseVertex);
+                }
             }
-
-            // Render the triangles
-            m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
+            else
+            {
+                // Render the triangles
+                m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
+            }
         }
 
         // Present the information rendered to the back buffer to the front buffer

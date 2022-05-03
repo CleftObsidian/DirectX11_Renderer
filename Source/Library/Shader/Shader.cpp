@@ -76,7 +76,7 @@ namespace library
                 OutputDebugStringA(reinterpret_cast<const char*>(pErrorBlob->GetBufferPointer()));
                 pErrorBlob->Release();
             }
-            return E_FAIL;
+            return hr;
         }
         if (pErrorBlob)
         {

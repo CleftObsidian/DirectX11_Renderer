@@ -1,7 +1,7 @@
 #include "Model/Model.h"
 
 #include "assimp/Importer.hpp"	// C++ importer interface
-#include "assimp/scene.h"		    // output data structure
+#include "assimp/scene.h"		// output data structure
 #include "assimp/postprocess.h"	// post processing flags
 
 namespace library
@@ -130,13 +130,20 @@ namespace library
     --------------------------------------------------------------------*/
     void Model::countVerticesAndIndices(_Inout_ UINT& uOutNumVertices, _Inout_ UINT& uOutNumIndices, _In_ const aiScene* pScene)
     {
+        m_aMeshes.resize(pScene->mNumMeshes);
+        m_aMaterials.resize(pScene->mNumMaterials);
+
         UINT uNumVertices = 0u;
         UINT uNumIndices = 0u;
         for (UINT i = 0u; i < pScene->mNumMeshes; ++i)
         {
+            m_aMeshes[i].uNumIndices = pScene->mMeshes[i]->mNumFaces * 3u;
+            m_aMeshes[i].uBaseVertex = uNumVertices;
+            m_aMeshes[i].uBaseIndex = uNumIndices;
+            m_aMeshes[i].uMaterialIndex = pScene->mMeshes[i]->mMaterialIndex;
+
             uNumVertices += pScene->mMeshes[i]->mNumVertices;
-            uNumIndices += static_cast<UINT>(pScene->mMeshes[i]->mMaterialIndex);
-            uNumIndices += pScene->mMeshes[i]->mNumFaces * 3u;
+            uNumIndices += m_aMeshes[i].uNumIndices;
         }
         
         uOutNumVertices = uNumVertices;
@@ -214,14 +221,18 @@ namespace library
         _In_ const std::filesystem::path& filePath
     )
     {
+        HRESULT hr = S_OK;
+
         UINT uNumVertices = 0u;
         UINT uNumIndices = 0u;
 
         countVerticesAndIndices(uNumVertices, uNumIndices, pScene);
         reserveSpace(uNumVertices, uNumIndices);
         initAllMeshes(pScene);
-        initMaterials(pDevice, pImmediateContext, pScene, filePath);
-        initialize(pDevice, pImmediateContext);
+        hr = initMaterials(pDevice, pImmediateContext, pScene, filePath);
+        hr = initialize(pDevice, pImmediateContext);
+
+        return hr;
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
@@ -258,7 +269,17 @@ namespace library
         {
             const aiMaterial* pMaterial = pScene->mMaterials[i];
 
-            loadTextures(pDevice, pImmediateContext, parentDirectory, pMaterial, i);
+            hr = loadTextures(pDevice, pImmediateContext, parentDirectory, pMaterial, i);
+            if (FAILED(hr))
+            {
+                MessageBox(
+                    nullptr,
+                    L"Call to loadTextures failed!",
+                    L"Game Graphics Programming",
+                    NULL
+                );
+                return hr;
+            }
         }
 
         return hr;
@@ -277,9 +298,11 @@ namespace library
     --------------------------------------------------------------------*/
     void Model::initSingleMesh(_In_ const aiMesh* pMesh)
     {
+        const aiVector3D zero3d(0.0f, 0.0f, 0.0f);
+
+        // Populate the vertex attribute vector
         for (UINT i = 0u; i < pMesh->mNumVertices; ++i)
         {
-            const aiVector3D zero3d(0.0f, 0.0f, 0.0f);
             const aiVector3D& position = pMesh->mVertices[i];
             const aiVector3D& normal = pMesh->mNormals[i];
             const aiVector3D& texCoord = pMesh->HasTextureCoords(0u) ? pMesh->mTextureCoords[0][i] : zero3d;
@@ -294,10 +317,10 @@ namespace library
             m_aVertices.push_back(vertex);
         }
 
+        // Populate the index buffer
         for (UINT i = 0u; i < pMesh->mNumFaces; ++i)
         {
             const aiFace& face = pMesh->mFaces[i];
-
             assert(face.mNumIndices == 3u);
 
             WORD aIndices[3] =
@@ -493,7 +516,7 @@ namespace library
     --------------------------------------------------------------------*/
     void Model::reserveSpace(_In_ UINT uNumVertices, _In_ UINT uNumIndices)
     {
-        m_aVertices.reserve(sizeof(SimpleVertex) * uNumVertices);
-        m_aIndices.reserve(sizeof(WORD) * uNumIndices);
+        m_aVertices.reserve(uNumVertices);
+        m_aIndices.reserve(uNumIndices);
     }
 }
