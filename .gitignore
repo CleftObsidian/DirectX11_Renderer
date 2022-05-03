@@ -364,6 +364,4 @@ FodyWeavers.xsd
 
 # TESTLINETESTLINETESTLINETESTLINETESTLINE
 
-# include external
-!External/**/
-!External/**/*.pdb
+# include external directory
