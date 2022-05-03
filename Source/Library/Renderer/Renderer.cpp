@@ -623,11 +623,14 @@ namespace library
                 for (UINT i = 0u; i < renderable->second->GetNumMeshes(); ++i)
                 {
                     const UINT materialIndex = renderable->second->GetMesh(i).uMaterialIndex;
-                    // Set texture resource view of the renderable into the pixel shader
-                    m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetMaterial(materialIndex).pDiffuse->GetTextureResourceView().GetAddressOf());
+                    if (renderable->second->GetMaterial(materialIndex).pDiffuse)
+                    {
+                        // Set texture resource view of the renderable into the pixel shader
+                        m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetMaterial(materialIndex).pDiffuse->GetTextureResourceView().GetAddressOf());
 
-                    // Set sampler state of the renderable into the pixel shader
-                    m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetMaterial(materialIndex).pDiffuse->GetSamplerState().GetAddressOf());
+                        // Set sampler state of the renderable into the pixel shader
+                        m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetMaterial(materialIndex).pDiffuse->GetSamplerState().GetAddressOf());
+                    }
 
                     // Render the triangles
                     m_immediateContext->DrawIndexed(renderable->second->GetMesh(i).uNumIndices,

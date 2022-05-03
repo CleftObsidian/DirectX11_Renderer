@@ -9,8 +9,8 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-Texture2D txDiffuse : register(t0);
-SamplerState samLinear : register(s0);
+Texture2D diffuseTexture : register(t0);
+SamplerState diffuseSampler : register(s0);
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -156,8 +156,8 @@ float4 PSPhong( PS_PHONG_INPUT input ) : SV_TARGET
         reflectDirection = reflect(-lightDirection, normalize(input.Normal));
         specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * LightColors[k];
     }
-
-    return float4(ambient + diffuse + specular, 1.0f) * txDiffuse.Sample(samLinear, input.TexCoord);
+    
+    return float4(ambient + diffuse + specular, 1.0f) * diffuseTexture.Sample(diffuseSampler, input.TexCoord);;
 }
 
 float4 PSLightCube( PS_LIGHT_CUBE_INPUT input ) : SV_TARGET

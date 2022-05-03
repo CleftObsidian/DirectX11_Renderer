@@ -44,7 +44,7 @@ namespace library
         HRESULT hr = S_OK;
 
         // Load the Texture
-        hr = CreateWICTextureFromFile(pDevice, pImmediateContext, m_filePath.filename().wstring().c_str(), nullptr, m_textureRV.GetAddressOf());
+        hr = CreateWICTextureFromFile(pDevice, pImmediateContext, m_filePath.c_str(), nullptr, m_textureRV.GetAddressOf());
         if (FAILED(hr))
         {
             MessageBox(
