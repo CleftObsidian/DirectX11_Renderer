@@ -365,3 +365,4 @@ FodyWeavers.xsd
 # TESTLINETESTLINETESTLINETESTLINETESTLINE
 
 # include external directory
+!External/**/
