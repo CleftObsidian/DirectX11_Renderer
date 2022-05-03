@@ -363,3 +363,7 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # TESTLINETESTLINETESTLINETESTLINETESTLINE
+
+# include external
+!External/**/
+!External/**/*.pdb
