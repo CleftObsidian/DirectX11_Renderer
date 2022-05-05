@@ -16,6 +16,9 @@ namespace library
 
       Modifies: [m_filePath, m_aVertices, m_aIndices].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Model::Model definition (remove the comment)
+    --------------------------------------------------------------------*/
     Model::Model(_In_ const std::filesystem::path& filePath)
         : Renderable(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f))
         , m_filePath(filePath)
@@ -122,6 +125,9 @@ namespace library
                   Pointer to an assimp scene object that contains the 
                   mesh information
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Model::countVerticesAndIndices definition (remove the comment)
+    --------------------------------------------------------------------*/
     void Model::countVerticesAndIndices(_Inout_ UINT& uOutNumVertices, _Inout_ UINT& uOutNumIndices, _In_ const aiScene* pScene)
     {
         m_aMeshes.resize(pScene->mNumMeshes);
@@ -205,6 +211,9 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Model::initFromScene definition (remove the comment)
+    --------------------------------------------------------------------*/
     HRESULT Model::initFromScene(
         _In_ ID3D11Device* pDevice,
         _In_ ID3D11DeviceContext* pImmediateContext,
@@ -284,6 +293,9 @@ namespace library
       Args:     const aiMesh* pMesh
                   Point to an assimp mesh object
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Model::initSingleMesh definition (remove the comment)
+    --------------------------------------------------------------------*/
     void Model::initSingleMesh(_In_ const aiMesh* pMesh)
     {
         const aiVector3D zero3d(0.0f, 0.0f, 0.0f);
@@ -499,6 +511,9 @@ namespace library
                 UINT uNumIndices
                   Number of indices
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Model::reserveSpace definition (remove the comment)
+    --------------------------------------------------------------------*/
     void Model::reserveSpace(_In_ UINT uNumVertices, _In_ UINT uNumIndices)
     {
         m_aVertices.reserve(uNumVertices);

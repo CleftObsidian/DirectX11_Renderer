@@ -13,6 +13,9 @@ namespace library
 
       Modifies: [m_filePath, m_textureRV, m_samplerLinear].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Texture::Texture definition (remove the comment)
+    --------------------------------------------------------------------*/
     Texture::Texture(_In_ const std::filesystem::path& filePath)
         : m_filePath(filePath)
         , m_textureRV(nullptr)
@@ -33,6 +36,9 @@ namespace library
 
       Modifies: [m_textureRV, m_samplerLinear].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Texture::Initialize definition (remove the comment)
+    --------------------------------------------------------------------*/
     HRESULT Texture::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
         HRESULT hr = S_OK;
