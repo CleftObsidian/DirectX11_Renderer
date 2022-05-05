@@ -14,6 +14,9 @@ namespace library
                  m_projection, m_renderables, m_vertexShaders, 
                  m_pixelShaders].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::Renderer definition (remove the comment)
+    --------------------------------------------------------------------*/
     Renderer::Renderer()
         : m_driverType(D3D_DRIVER_TYPE_NULL)
         , m_featureLevel(D3D_FEATURE_LEVEL_11_0)
@@ -28,12 +31,14 @@ namespace library
         , m_depthStencilView(nullptr)
         , m_cbChangeOnResize(nullptr)
         , m_cbLights(nullptr)
+        , m_pszMainSceneName(PCWSTR())
         , m_camera(Camera(XMVectorSet(0.0f, 1.0f, -10.0f, 0.0f)))
         , m_projection(XMMatrixIdentity())
         , m_renderables(std::unordered_map<std::wstring, std::shared_ptr<Renderable>>())
         , m_aPointLights{ std::shared_ptr<PointLight>() }
         , m_vertexShaders(std::unordered_map<std::wstring, std::shared_ptr<VertexShader>>())
         , m_pixelShaders(std::unordered_map<std::wstring, std::shared_ptr<PixelShader>>())
+        , m_scenes(std::unordered_map<std::wstring, std::shared_ptr<Scene>>())
     {
         // empty
     }
@@ -55,6 +60,9 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::Initialize definition (remove the comment)
+    --------------------------------------------------------------------*/
     HRESULT Renderer::Initialize(_In_ HWND hWnd)
     {
         HRESULT hr = S_OK;
@@ -400,6 +408,9 @@ namespace library
       Returns:  HRESULT
                   Status code.
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::AddRenderable definition (remove the comment)
+    --------------------------------------------------------------------*/
     HRESULT Renderer::AddRenderable(_In_ PCWSTR pszRenderableName, _In_ const std::shared_ptr<Renderable>& renderable)
     {
         if (m_renderables.find(pszRenderableName) != m_renderables.end())
@@ -433,10 +444,19 @@ namespace library
       Returns:  HRESULT
                   Status code.
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::AddPointLight definition (remove the comment)
+    --------------------------------------------------------------------*/
     HRESULT Renderer::AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pPointLight)
     {
         if (index >= NUM_LIGHTS)
         {
+            MessageBox(
+                nullptr,
+                L"Call to AddPointLight failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
             return E_FAIL;
         }
 
@@ -460,6 +480,9 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::AddVertexShader definition (remove the comment)
+    --------------------------------------------------------------------*/
     HRESULT Renderer::AddVertexShader(_In_ PCWSTR pszVertexShaderName, _In_ const std::shared_ptr<VertexShader>& vertexShader)
     {
         if (m_vertexShaders.find(pszVertexShaderName) != m_vertexShaders.end())
@@ -493,6 +516,9 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::AddPixelShader definition (remove the comment)
+    --------------------------------------------------------------------*/
     HRESULT Renderer::AddPixelShader(_In_ PCWSTR pszPixelShaderName, _In_ const std::shared_ptr<PixelShader>& pixelShader)
     {
         if (m_pixelShaders.find(pszPixelShaderName) != m_pixelShaders.end())
@@ -512,6 +538,76 @@ namespace library
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::AddScene
+
+      Summary:  Add a scene
+
+      Args:     PCWSTR pszSceneName
+                  Key of a scene
+                const std::filesystem::path& sceneFilePath
+                  File path to initialize a scene
+
+      Modifies: [m_scenes].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::AddScene definition (remove the comment)
+    --------------------------------------------------------------------*/
+    HRESULT Renderer::AddScene(_In_ PCWSTR pszSceneName, const std::filesystem::path& sceneFilePath)
+    {
+        if (m_scenes.find(pszSceneName) != m_scenes.end())
+        {
+            MessageBox(
+                nullptr,
+                L"Call to AddScene failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
+            return E_FAIL;
+        }
+
+        m_scenes.insert(std::make_pair(pszSceneName, std::make_shared<Scene>(sceneFilePath)));
+
+        return S_OK;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::SetMainScene
+
+      Summary:  Set the main scene
+
+      Args:     PCWSTR pszSceneName
+                  Name of the scene to set as the main scene
+
+      Modifies: [m_pszMainSceneName].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::SetMainScene definition (remove the comment)
+    --------------------------------------------------------------------*/
+    HRESULT Renderer::SetMainScene(_In_ PCWSTR pszSceneName)
+    {
+        if (m_scenes.find(pszSceneName) == m_scenes.end())
+        {
+            MessageBox(
+                nullptr,
+                L"Call to SetMainScene failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
+            return E_FAIL;
+        }
+
+        m_pszMainSceneName = pszSceneName;
+
+        return S_OK;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::HandleInput
 
       Summary:  Add the pixel shader into the renderer and initialize it
@@ -523,6 +619,9 @@ namespace library
 
       Modifies: [m_camera].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::HandleInput definition (remove the comment)
+    --------------------------------------------------------------------*/
     void Renderer::HandleInput(_In_ const DirectionsInput& directions, _In_ const MouseRelativeMovement& mouseRelativeMovement, _In_ FLOAT deltaTime)
     {
         m_camera.HandleInput(directions, mouseRelativeMovement, deltaTime);
@@ -536,6 +635,9 @@ namespace library
       Args:     FLOAT deltaTime
                   Time difference of a frame
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::Update definition (remove the comment)
+    --------------------------------------------------------------------*/
     void Renderer::Update(_In_ FLOAT deltaTime)
     {
         std::unordered_map<std::wstring, std::shared_ptr<Renderable>>::iterator renderable;
@@ -555,99 +657,9 @@ namespace library
 
       Summary:  Render the frame
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    void Renderer::Render()
-    {
-        // Clear the back buffer
-        m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::MidnightBlue);
-
-        // Clear the depth buffer to 1.0 (max depth)
-        m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
-
-        // Update camera constant buffer
-        CBChangeOnCameraMovement cbChangeOnCameraMovement =
-        {
-            .View = XMMatrixTranspose(m_camera.GetView()),
-        };
-        XMStoreFloat4(&cbChangeOnCameraMovement.CameraPosition, m_camera.GetEye());
-        m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0u, nullptr, &cbChangeOnCameraMovement, 0u, 0u);
-
-        // Update lights constant buffer
-        CBLights cbLights = {};
-        for (UINT i = 0u; i < NUM_LIGHTS; ++i)
-        {
-            cbLights.LightPositions[i] = m_aPointLights[i]->GetPosition();
-            cbLights.LightColors[i] = m_aPointLights[i]->GetColor();
-        }
-        m_immediateContext->UpdateSubresource(m_cbLights.Get(), 0u, nullptr, &cbLights, 0u, 0u);
-
-        // For all renderables
-        std::unordered_map<std::wstring, std::shared_ptr<Renderable>>::iterator renderable;
-        for (renderable = m_renderables.begin(); renderable != m_renderables.end(); ++renderable)
-        {
-            // Update renderable constant buffer
-            CBChangesEveryFrame cbChangesEveryFrame =
-            {
-                .World = XMMatrixTranspose(renderable->second->GetWorldMatrix()),
-                .OutputColor = renderable->second->GetOutputColor()
-            };
-            m_immediateContext->UpdateSubresource(renderable->second->GetConstantBuffer().Get(), 0u, nullptr, &cbChangesEveryFrame, 0u, 0u);
-
-            // Set the vertex buffer
-            UINT uStride = sizeof(SimpleVertex);
-            UINT uOffset = 0u;
-            m_immediateContext->IASetVertexBuffers(0u, 1u, renderable->second->GetVertexBuffer().GetAddressOf(), &uStride, &uOffset);
-
-            // Set the index buffer
-            m_immediateContext->IASetIndexBuffer(renderable->second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
-
-            // Set primitive topology
-            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-            // Set the input layout
-            m_immediateContext->IASetInputLayout(renderable->second->GetVertexLayout().Get());
-
-            // Set the vertex shader and constant buffers
-            m_immediateContext->VSSetShader(renderable->second->GetVertexShader().Get(), nullptr, 0u);
-            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
-            m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
-            m_immediateContext->VSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
-
-            // Set the pixel shader and constant buffers
-            m_immediateContext->PSSetShader(renderable->second->GetPixelShader().Get(), nullptr, 0u);
-            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
-            m_immediateContext->PSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
-            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
-
-            if (renderable->second->HasTexture())
-            {
-                for (UINT i = 0u; i < renderable->second->GetNumMeshes(); ++i)
-                {
-                    const UINT materialIndex = renderable->second->GetMesh(i).uMaterialIndex;
-                    if (renderable->second->GetMaterial(materialIndex).pDiffuse)
-                    {
-                        // Set texture resource view of the renderable into the pixel shader
-                        m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetMaterial(materialIndex).pDiffuse->GetTextureResourceView().GetAddressOf());
-
-                        // Set sampler state of the renderable into the pixel shader
-                        m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetMaterial(materialIndex).pDiffuse->GetSamplerState().GetAddressOf());
-                    }
-
-                    // Render the triangles
-                    m_immediateContext->DrawIndexed(renderable->second->GetMesh(i).uNumIndices,
-                                                    renderable->second->GetMesh(i).uBaseIndex,
-                                                    renderable->second->GetMesh(i).uBaseVertex);
-                }
-            }
-            else
-            {
-                // Render the triangles
-                m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
-            }
-        }
-
-        // Present the information rendered to the back buffer to the front buffer
-        m_swapChain->Present(0u, 0u);
-    }
+    /*--------------------------------------------------------------------
+      TODO: Renderer::Render definition (remove the comment)
+    --------------------------------------------------------------------*/
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::SetVertexShaderOfRenderable
@@ -664,33 +676,9 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    HRESULT Renderer::SetVertexShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszVertexShaderName)
-    {
-        if (m_renderables.find(pszRenderableName) == m_renderables.end())
-        {
-            MessageBox(
-                nullptr,
-                L"Call to SetVertexShaderOfRenderable(code: 0) failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-            return E_FAIL;
-        }
-        if (m_vertexShaders.find(pszVertexShaderName) == m_vertexShaders.end())
-        {
-            MessageBox(
-                nullptr,
-                L"Call to SetVertexShaderOfRenderable(code: 1) failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-            return E_FAIL;
-        }
-
-        m_renderables[pszRenderableName]->SetVertexShader(m_vertexShaders[pszVertexShaderName]);
-
-        return S_OK;
-    }
+    /*--------------------------------------------------------------------
+      TODO: Renderer::SetVertexShaderOfRenderable definition (remove the comment)
+    --------------------------------------------------------------------*/
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::SetPixelShaderOfRenderable
@@ -707,33 +695,48 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    HRESULT Renderer::SetPixelShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszPixelShaderName)
-    {
-        if (m_renderables.find(pszRenderableName) == m_renderables.end())
-        {
-            MessageBox(
-                nullptr,
-                L"Call to SetPixelShaderOfRenderable(code: 0) failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-            return E_FAIL;
-        }
-        if (m_pixelShaders.find(pszPixelShaderName) == m_pixelShaders.end())
-        {
-            MessageBox(
-                nullptr,
-                L"Call to SetPixelShaderOfRenderable(code: 1) failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-            return E_FAIL;
-        }
+    /*--------------------------------------------------------------------
+      TODO: Renderer::SetPixelShaderOfRenderable definition (remove the comment)
+    --------------------------------------------------------------------*/
 
-        m_renderables[pszRenderableName]->SetPixelShader(m_pixelShaders[pszPixelShaderName]);
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::SetVertexShaderOfScene
 
-        return S_OK;
-    }
+      Summary:  Sets the vertex shader for the voxels in a scene
+
+      Args:     PCWSTR pszSceneName
+                  Key of the scene
+                PCWSTR pszVertexShaderName
+                  Key of the vertex shader
+
+      Modifies: [m_scenes].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::SetVertexShaderOfScene definition (remove the comment)
+    --------------------------------------------------------------------*/
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::SetPixelShaderOfScene
+
+      Summary:  Sets the pixel shader for the voxels in a scene
+
+      Args:     PCWSTR pszRenderableName
+                  Key of the renderable
+                PCWSTR pszPixelShaderName
+                  Key of the pixel shader
+
+      Modifies: [m_renderables].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    /*--------------------------------------------------------------------
+      TODO: Renderer::SetPixelShaderOfScene definition (remove the comment)
+    --------------------------------------------------------------------*/
+
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::GetDriverType
@@ -743,8 +746,7 @@ namespace library
       Returns:  D3D_DRIVER_TYPE
                   The Direct3D driver type used
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    D3D_DRIVER_TYPE Renderer::GetDriverType() const
-    {
-        return m_driverType;
-    }
+    /*--------------------------------------------------------------------
+      TODO: Renderer::GetDriverType definition (remove the comment)
+    --------------------------------------------------------------------*/
 }
