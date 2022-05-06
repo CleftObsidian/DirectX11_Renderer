@@ -19,7 +19,7 @@
 #include "Cube/Cube.h"
 #include "Light/RotatingPointLight.h"
 #include "Cube/RotatingCube.h"
-#include "Scene/Voxel.h"
+#include "Scene/Scene.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   Function: wWinMain

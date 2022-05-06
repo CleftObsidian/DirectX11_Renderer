@@ -119,7 +119,7 @@ namespace library
         // Create the instance buffer
         D3D11_BUFFER_DESC iBufferDesc =
         {
-            .ByteWidth = sizeof(InstanceData) * m_aInstanceData.size(),
+            .ByteWidth = static_cast<UINT>(sizeof(InstanceData) * m_aInstanceData.size()),
             .Usage = D3D11_USAGE_DEFAULT,
             .BindFlags = D3D11_BIND_VERTEX_BUFFER,
             .CPUAccessFlags = 0

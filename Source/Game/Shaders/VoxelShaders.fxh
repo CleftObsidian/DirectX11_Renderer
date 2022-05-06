@@ -88,7 +88,7 @@ struct VS_INPUT
 {
     float4 Position : POSITION;
     float3 Normal : NORMAL;
-    row_major float4x4 Transform : INSTANCE_TRANSFORM;
+    row_major matrix Transform : INSTANCE_TRANSFORM;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C

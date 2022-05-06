@@ -104,7 +104,34 @@ namespace library
                 DXGI_FORMAT_R32G32B32A32_FLOAT,
                 1,
                 0,
-                D3D11_INPUT_PER_VERTEX_DATA,
+                D3D11_INPUT_PER_INSTANCE_DATA,
+                1
+            },
+            {
+                "INSTANCE_TRANSFORM",
+                1,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                1,
+                16,
+                D3D11_INPUT_PER_INSTANCE_DATA,
+                1
+            },
+            {
+                "INSTANCE_TRANSFORM",
+                2,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                1,
+                32,
+                D3D11_INPUT_PER_INSTANCE_DATA,
+                1
+            },
+            {
+                "INSTANCE_TRANSFORM",
+                3,
+                DXGI_FORMAT_R32G32B32A32_FLOAT,
+                1,
+                48,
+                D3D11_INPUT_PER_INSTANCE_DATA,
                 1
             },
         };
