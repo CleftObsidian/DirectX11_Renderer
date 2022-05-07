@@ -15,10 +15,8 @@
 
 #include "Camera/Camera.h"
 #include "Light/PointLight.h"
-#include "Model/Model.h"
 #include "Renderer/DataTypes.h"
 #include "Renderer/Renderable.h"
-#include "Scene/Scene.h"
 #include "Shader/PixelShader.h"
 #include "Shader/VertexShader.h"
 #include "Window/MainWindow.h"
@@ -34,25 +32,23 @@ namespace library
       Methods:  Initialize
                   Creates Direct3D device and swap chain
                 AddRenderable
-                  Add a renderable object and initialize the object
+                  Add a renderable object
+                AddPointLight
+                  Add a point light object
                 AddVertexShader
-                  Add the vertex shader into the renderer
+                  Add a vertex shader
                 AddPixelShader
-                  Add the pixel shader into the renderer
-                AddScene
-                  Add a scene
-                SetMainScene
-                  Set the main scene
+                  Add a pixel shader
                 HandleInput
-                  Handles the keyboard / mouse input
+                  Handles input
                 Update
                   Update the renderables each frame
                 Render
                   Renders the frame
                 SetVertexShaderOfRenderable
-                  Sets the vertex shader for a renderable
+                  Sets vertex shader of a renderable
                 SetPixelShaderOfRenderable
-                  Sets the pixel shader for a renderable
+                  Sets pixel shader of a renderable
                 GetDriverType
                   Returns the Direct3D driver type
                 Renderer
@@ -72,12 +68,9 @@ namespace library
 
         HRESULT Initialize(_In_ HWND hWnd);
         HRESULT AddRenderable(_In_ PCWSTR pszRenderableName, _In_ const std::shared_ptr<Renderable>& renderable);
-        HRESULT AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pointLight);
+        HRESULT AddPointLight(_In_ size_t index, _In_ const std::shared_ptr<PointLight>& pPointLight);
         HRESULT AddVertexShader(_In_ PCWSTR pszVertexShaderName, _In_ const std::shared_ptr<VertexShader>& vertexShader);
         HRESULT AddPixelShader(_In_ PCWSTR pszPixelShaderName, _In_ const std::shared_ptr<PixelShader>& pixelShader);
-
-        HRESULT AddScene(_In_ PCWSTR pszSceneName, const std::filesystem::path& sceneFilePath);
-        HRESULT SetMainScene(_In_ PCWSTR pszSceneName);
 
         void HandleInput(_In_ const DirectionsInput& directions, _In_ const MouseRelativeMovement& mouseRelativeMovement, _In_ FLOAT deltaTime);
         void Update(_In_ FLOAT deltaTime);
@@ -85,8 +78,6 @@ namespace library
 
         HRESULT SetVertexShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszVertexShaderName);
         HRESULT SetPixelShaderOfRenderable(_In_ PCWSTR pszRenderableName, _In_ PCWSTR pszPixelShaderName);
-        HRESULT SetVertexShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszVertexShaderName);
-        HRESULT SetPixelShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszPixelShaderName);
 
         D3D_DRIVER_TYPE GetDriverType() const;
 
@@ -104,7 +95,6 @@ namespace library
         ComPtr<ID3D11DepthStencilView> m_depthStencilView;
         ComPtr<ID3D11Buffer> m_cbChangeOnResize;
         ComPtr<ID3D11Buffer> m_cbLights;
-        PCWSTR m_pszMainSceneName;
         Camera m_camera;
         XMMATRIX m_projection;
 
@@ -112,6 +102,5 @@ namespace library
         std::shared_ptr<PointLight> m_aPointLights[NUM_LIGHTS];
         std::unordered_map<std::wstring, std::shared_ptr<VertexShader>> m_vertexShaders;
         std::unordered_map<std::wstring, std::shared_ptr<PixelShader>> m_pixelShaders;
-        std::unordered_map<std::wstring, std::shared_ptr<Scene>> m_scenes;
     };
 }
