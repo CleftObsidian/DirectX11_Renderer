@@ -28,12 +28,14 @@ namespace library
         , m_depthStencilView(nullptr)
         , m_cbChangeOnResize(nullptr)
         , m_cbLights(nullptr)
-        , m_camera(Camera(XMVectorSet(0.0f, 1.0f, -10.0f, 0.0f)))
+        , m_pszMainSceneName(PCWSTR())
+        , m_camera(Camera(XMVectorSet(0.0f, 1.0f, -5.0f, 0.0f)))
         , m_projection(XMMatrixIdentity())
         , m_renderables(std::unordered_map<std::wstring, std::shared_ptr<Renderable>>())
         , m_aPointLights{ std::shared_ptr<PointLight>() }
         , m_vertexShaders(std::unordered_map<std::wstring, std::shared_ptr<VertexShader>>())
         , m_pixelShaders(std::unordered_map<std::wstring, std::shared_ptr<PixelShader>>())
+        , m_scenes(std::unordered_map<std::wstring, std::shared_ptr<Scene>>())
     {
         // empty
     }
@@ -382,6 +384,16 @@ namespace library
             );
         }
 
+        // Initialize the voxels of scenes
+        std::unordered_map<std::wstring, std::shared_ptr<Scene>>::iterator scene;
+        for (scene = m_scenes.begin(); scene != m_scenes.end(); ++scene)
+        {
+            for (UINT i = 0u; i < scene->second->GetVoxels().size(); ++i)
+            {
+                scene->second->GetVoxels()[i]->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
+            }
+        }
+
         return hr;
     }
 
@@ -437,6 +449,12 @@ namespace library
     {
         if (index >= NUM_LIGHTS)
         {
+            MessageBox(
+                nullptr,
+                L"Call to AddPointLight failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
             return E_FAIL;
         }
 
@@ -512,6 +530,70 @@ namespace library
     }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::AddScene
+
+      Summary:  Add a scene
+
+      Args:     PCWSTR pszSceneName
+                  Key of a scene
+                const std::filesystem::path& sceneFilePath
+                  File path to initialize a scene
+
+      Modifies: [m_scenes].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    HRESULT Renderer::AddScene(_In_ PCWSTR pszSceneName, const std::filesystem::path& sceneFilePath)
+    {
+        if (m_scenes.find(pszSceneName) != m_scenes.end())
+        {
+            MessageBox(
+                nullptr,
+                L"Call to AddScene failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
+            return E_FAIL;
+        }
+
+        m_scenes.insert(std::make_pair(pszSceneName, std::make_shared<Scene>(sceneFilePath)));
+
+        return S_OK;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::SetMainScene
+
+      Summary:  Set the main scene
+
+      Args:     PCWSTR pszSceneName
+                  Name of the scene to set as the main scene
+
+      Modifies: [m_pszMainSceneName].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    HRESULT Renderer::SetMainScene(_In_ PCWSTR pszSceneName)
+    {
+        if (m_scenes.find(pszSceneName) == m_scenes.end())
+        {
+            MessageBox(
+                nullptr,
+                L"Call to SetMainScene failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
+            return E_FAIL;
+        }
+
+        m_pszMainSceneName = pszSceneName;
+
+        return S_OK;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::HandleInput
 
       Summary:  Add the pixel shader into the renderer and initialize it
@@ -547,6 +629,11 @@ namespace library
         for (UINT i = 0u; i < NUM_LIGHTS; ++i)
         {
             m_aPointLights[i]->Update(deltaTime);
+        }
+
+        for (UINT i = 0u; i < m_scenes[m_pszMainSceneName]->GetVoxels().size(); ++i)
+        {
+            m_scenes[m_pszMainSceneName]->GetVoxels()[i]->Update(deltaTime);
         }
     }
 
@@ -584,14 +671,6 @@ namespace library
         std::unordered_map<std::wstring, std::shared_ptr<Renderable>>::iterator renderable;
         for (renderable = m_renderables.begin(); renderable != m_renderables.end(); ++renderable)
         {
-            // Update renderable constant buffer
-            CBChangesEveryFrame cbChangesEveryFrame =
-            {
-                .World = XMMatrixTranspose(renderable->second->GetWorldMatrix()),
-                .OutputColor = renderable->second->GetOutputColor()
-            };
-            m_immediateContext->UpdateSubresource(renderable->second->GetConstantBuffer().Get(), 0u, nullptr, &cbChangesEveryFrame, 0u, 0u);
-
             // Set the vertex buffer
             UINT uStride = sizeof(SimpleVertex);
             UINT uOffset = 0u;
@@ -605,6 +684,14 @@ namespace library
 
             // Set the input layout
             m_immediateContext->IASetInputLayout(renderable->second->GetVertexLayout().Get());
+
+            // Update renderable constant buffer
+            CBChangesEveryFrame cbChangesEveryFrame =
+            {
+                .World = XMMatrixTranspose(renderable->second->GetWorldMatrix()),
+                .OutputColor = renderable->second->GetOutputColor()
+            };
+            m_immediateContext->UpdateSubresource(renderable->second->GetConstantBuffer().Get(), 0u, nullptr, &cbChangesEveryFrame, 0u, 0u);
 
             // Set the vertex shader and constant buffers
             m_immediateContext->VSSetShader(renderable->second->GetVertexShader().Get(), nullptr, 0u);
@@ -634,8 +721,8 @@ namespace library
 
                     // Render the triangles
                     m_immediateContext->DrawIndexed(renderable->second->GetMesh(i).uNumIndices,
-                                                    renderable->second->GetMesh(i).uBaseIndex,
-                                                    renderable->second->GetMesh(i).uBaseVertex);
+                        renderable->second->GetMesh(i).uBaseIndex,
+                        renderable->second->GetMesh(i).uBaseVertex);
                 }
             }
             else
@@ -643,6 +730,52 @@ namespace library
                 // Render the triangles
                 m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
             }
+        }
+
+        // For all voxels in main scene
+        std::vector<std::shared_ptr<Voxel>>::iterator voxel;
+        for (voxel = m_scenes[m_pszMainSceneName]->GetVoxels().begin(); voxel != m_scenes[m_pszMainSceneName]->GetVoxels().end(); ++voxel)
+        {
+            // Set the vertex buffer
+            UINT uStride = sizeof(SimpleVertex);
+            UINT uOffset = 0u;
+            m_immediateContext->IASetVertexBuffers(0u, 1u, voxel->get()->GetVertexBuffer().GetAddressOf(), &uStride, &uOffset);
+
+            // Set the instance buffer
+            uStride = sizeof(InstanceData);
+            m_immediateContext->IASetVertexBuffers(1u, 1u, voxel->get()->GetInstanceBuffer().GetAddressOf(), &uStride, &uOffset);
+
+            // Set the index buffer
+            m_immediateContext->IASetIndexBuffer(voxel->get()->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
+
+            // Set primitive topology
+            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            // Set the input layout
+            m_immediateContext->IASetInputLayout(voxel->get()->GetVertexLayout().Get());
+
+            // Update voxel constant buffer
+            CBChangesEveryFrame cbChangesEveryFrame =
+            {
+                .World = XMMatrixTranspose(voxel->get()->GetWorldMatrix()),
+                .OutputColor = voxel->get()->GetOutputColor()
+            };
+            m_immediateContext->UpdateSubresource(voxel->get()->GetConstantBuffer().Get(), 0u, nullptr, &cbChangesEveryFrame, 0u, 0u);
+
+            // Set the vertex shader and constant buffers
+            m_immediateContext->VSSetShader(voxel->get()->GetVertexShader().Get(), nullptr, 0u);
+            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(2u, 1u, voxel->get()->GetConstantBuffer().GetAddressOf());
+
+            // Set the pixel shader and constant buffers
+            m_immediateContext->PSSetShader(voxel->get()->GetPixelShader().Get(), nullptr, 0u);
+            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(2u, 1u, voxel->get()->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
+
+            // Render the triangles
+            m_immediateContext->DrawIndexedInstanced(voxel->get()->GetNumIndices(), voxel->get()->GetNumInstances(), 0u, 0, 0u);
         }
 
         // Present the information rendered to the back buffer to the front buffer
@@ -731,6 +864,98 @@ namespace library
         }
 
         m_renderables[pszRenderableName]->SetPixelShader(m_pixelShaders[pszPixelShaderName]);
+
+        return S_OK;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::SetVertexShaderOfScene
+
+      Summary:  Sets the vertex shader for the voxels in a scene
+
+      Args:     PCWSTR pszSceneName
+                  Key of the scene
+                PCWSTR pszVertexShaderName
+                  Key of the vertex shader
+
+      Modifies: [m_scenes].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    HRESULT Renderer::SetVertexShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszVertexShaderName)
+    {
+        if (m_scenes.find(pszSceneName) == m_scenes.end())
+        {
+            MessageBox(
+                nullptr,
+                L"Call to SetVertexShaderOfScene(code: 0) failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
+            return E_FAIL;
+        }
+        if (m_vertexShaders.find(pszVertexShaderName) == m_vertexShaders.end())
+        {
+            MessageBox(
+                nullptr,
+                L"Call to SetVertexShaderOfScene(code: 1) failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
+            return E_FAIL;
+        }
+
+        for (UINT i = 0u; i < m_scenes[pszSceneName]->GetVoxels().size(); ++i)
+        {
+            m_scenes[pszSceneName]->GetVoxels()[i]->SetVertexShader(m_vertexShaders[pszVertexShaderName]);
+        }
+
+        return S_OK;
+    }
+
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Renderer::SetPixelShaderOfScene
+
+      Summary:  Sets the pixel shader for the voxels in a scene
+
+      Args:     PCWSTR pszRenderableName
+                  Key of the renderable
+                PCWSTR pszPixelShaderName
+                  Key of the pixel shader
+
+      Modifies: [m_renderables].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
+    HRESULT Renderer::SetPixelShaderOfScene(_In_ PCWSTR pszSceneName, _In_ PCWSTR pszPixelShaderName)
+    {
+        if (m_scenes.find(pszSceneName) == m_scenes.end())
+        {
+            MessageBox(
+                nullptr,
+                L"Call to SetPixelShaderOfScene(code: 0) failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
+            return E_FAIL;
+        }
+        if (m_pixelShaders.find(pszPixelShaderName) == m_pixelShaders.end())
+        {
+            MessageBox(
+                nullptr,
+                L"Call to SetPixelShaderOfScene(code: 1) failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
+            return E_FAIL;
+        }
+
+        for (UINT i = 0u; i < m_scenes[pszSceneName]->GetVoxels().size(); ++i)
+        {
+            m_scenes[pszSceneName]->GetVoxels()[i]->SetPixelShader(m_pixelShaders[pszPixelShaderName]);
+        }
 
         return S_OK;
     }
