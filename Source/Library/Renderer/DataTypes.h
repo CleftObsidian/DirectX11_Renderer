@@ -4,9 +4,9 @@
 
 namespace library
 {
+    #define NUM_LIGHTS (2)
     #define MAX_NUM_BONES (256)
     #define MAX_NUM_BONES_PER_VERTEX (16)
-    #define NUM_LIGHTS (2)
 
     struct SimpleVertex
     {

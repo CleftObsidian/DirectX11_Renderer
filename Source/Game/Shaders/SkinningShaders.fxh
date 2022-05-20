@@ -12,8 +12,6 @@ static const unsigned int MAX_NUM_BONES = 256u;
 /*--------------------------------------------------------------------
   TODO: Declare a diffuse texture and a sampler state (remove the comment)
 --------------------------------------------------------------------*/
-Texture2D diffuseTexture : register(t0);
-SamplerState diffuseSampler : register(s0);
 
 //--------------------------------------------------------------------------------------
 // Constant Buffer Variables
@@ -26,11 +24,6 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 /*--------------------------------------------------------------------
   TODO: cbChangeOnCameraMovement definition (remove the comment)
 --------------------------------------------------------------------*/
-cbuffer cbChangeOnCameraMovement : register(b0)
-{
-    matrix View;
-    float4 CameraPosition;
-};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbChangeOnResize
@@ -40,10 +33,6 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 /*--------------------------------------------------------------------
   TODO: cbChangeOnResize definition (remove the comment)
 --------------------------------------------------------------------*/
-cbuffer cbChangeOnResize : register(b1)
-{
-    matrix Projection;
-};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbChangesEveryFrame
@@ -53,11 +42,6 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 /*--------------------------------------------------------------------
   TODO: cbChangesEveryFrame definition (remove the comment)
 --------------------------------------------------------------------*/
-cbuffer cbChangesEveryFrame : register(b2)
-{
-    matrix World;
-    float4 OutputColor;
-};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbLights
@@ -67,11 +51,6 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 /*--------------------------------------------------------------------
   TODO: cbLights definition (remove the comment)
 --------------------------------------------------------------------*/
-cbuffer cbLights : register(b3)
-{
-    float4 LightPositions[NUM_LIGHTS];
-    float4 LightColors[NUM_LIGHTS];
-};
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbSkinning
@@ -81,10 +60,6 @@ C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
 /*--------------------------------------------------------------------
   TODO: cbLights definition (remove the comment)
 --------------------------------------------------------------------*/
-cbuffer cbSkinning : register(b4)
-{
-    matrix BoneTransforms[MAX_NUM_BONES];
-};
 
 //--------------------------------------------------------------------------------------
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
