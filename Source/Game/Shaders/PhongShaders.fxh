@@ -131,7 +131,7 @@ float4 PSPhong( PS_PHONG_INPUT input ) : SV_TARGET
 {
     // ambient
     float3 ambient = float3(0.0f, 0.0f, 0.0f);
-    for (uint i = 0; i < NUM_LIGHTS; ++i)
+    for (uint i = 0u; i < NUM_LIGHTS; ++i)
     {
         ambient += float4(float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz, 1.0f);
     }
@@ -139,7 +139,7 @@ float4 PSPhong( PS_PHONG_INPUT input ) : SV_TARGET
     // diffuse
     float3 lightDirection = float3(0.0f, 0.0f, 0.0f);
     float3 diffuse = float3(0.0f, 0.0f, 0.0f);
-    for (uint j = 0; j < NUM_LIGHTS; ++j)
+    for (uint j = 0u; j < NUM_LIGHTS; ++j)
     {
         lightDirection = normalize(LightPositions[j].xyz - input.WorldPosition);
         diffuse += saturate(dot(normalize(input.Normal), lightDirection)) * LightColors[j];

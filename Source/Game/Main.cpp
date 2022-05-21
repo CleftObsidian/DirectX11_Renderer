@@ -170,7 +170,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             FLOAT height = 0.0f;
 
             FLOAT frequencySum = 0.0f;
-            for (UINT i = 0; i < 4; ++i)
+            for (UINT i = 0u; i < 4; ++i)
             {
                 FLOAT frequency = pow(2.0f, static_cast<FLOAT>(i));
                 frequencySum += 1.0f / frequency;
@@ -184,7 +184,7 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
             FLOAT moisture = 0.0f;
 
             frequencySum = 0.0f;
-            for (UINT i = 0; i < 4; ++i)
+            for (UINT i = 0u; i < 4; ++i)
             {
                 FLOAT frequency = pow(2.0f, static_cast<FLOAT>(i));
                 frequencySum += 1.0f / frequency;

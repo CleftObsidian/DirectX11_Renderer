@@ -50,7 +50,7 @@ namespace library
 
       Modifies: [m_aInstanceData].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    void InstancedRenderable::SetInstanceData(std::vector<InstanceData>&& aInstanceData)
+    void InstancedRenderable::SetInstanceData(_In_ std::vector<InstanceData>&& aInstanceData)
     {
         m_aInstanceData = std::move(aInstanceData);
     }
