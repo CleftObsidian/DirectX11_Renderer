@@ -661,7 +661,8 @@ namespace library
     {
         for (UINT i = 0u; i < pMesh[uMeshIndex].mNumBones; ++i)
         {
-            initMeshSingleBone(uMeshIndex, pMesh[uMeshIndex].mBones[i]);
+            const aiBone* pBone = pMesh[uMeshIndex].mBones[i];
+            initMeshSingleBone(uMeshIndex, pBone);
         }
     }
 
