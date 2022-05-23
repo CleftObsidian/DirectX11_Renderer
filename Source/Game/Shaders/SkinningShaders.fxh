@@ -130,10 +130,10 @@ struct PS_PHONG_INPUT
 PS_PHONG_INPUT VSPhong(VS_INPUT input)
 {
     matrix skinTransform = (matrix) 0;
-    skinTransform += BoneTransforms[input.BoneIndices.x] * input.BoneWeights.x;
-    skinTransform += BoneTransforms[input.BoneIndices.y] * input.BoneWeights.y;
-    skinTransform += BoneTransforms[input.BoneIndices.z] * input.BoneWeights.z;
-    skinTransform += BoneTransforms[input.BoneIndices.w] * input.BoneWeights.w;
+    skinTransform += mul(input.BoneWeights.x, BoneTransforms[input.BoneIndices.x]);
+    skinTransform += mul(input.BoneWeights.y, BoneTransforms[input.BoneIndices.y]);
+    skinTransform += mul(input.BoneWeights.z, BoneTransforms[input.BoneIndices.z]);
+    skinTransform += mul(input.BoneWeights.w, BoneTransforms[input.BoneIndices.w]);
     
     PS_PHONG_INPUT output = (PS_PHONG_INPUT) 0;
     output.Position = mul(input.Position, skinTransform);
@@ -185,5 +185,6 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
         specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * LightColors[k];
     }
     
-    return float4(ambient + diffuse + specular, 1.0f) * diffuseTexture.Sample(diffuseSampler, input.TexCoord);;
+    //return float4(ambient + diffuse + specular, 1.0f) * diffuseTexture.Sample(diffuseSampler, input.TexCoord);
+    return float4((input.Normal + 1.0f) / 2.0f, 1.0f);
 }
