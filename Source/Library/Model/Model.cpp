@@ -145,34 +145,8 @@ namespace library
             OutputDebugString(L"\n");
         }
 
-        // Create vertex buffer
-        D3D11_BUFFER_DESC vBufferDesc =
-        {
-            .ByteWidth = sizeof(SimpleVertex) * GetNumVertices(),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_VERTEX_BUFFER,
-            .CPUAccessFlags = 0u,
-            .MiscFlags = 0u,
-            .StructureByteStride = 0u
-        };
-
-        D3D11_SUBRESOURCE_DATA vInitData =
-        {
-            .pSysMem = getVertices(),
-            .SysMemPitch = 0u,
-            .SysMemSlicePitch = 0u
-        };
-        hr = pDevice->CreateBuffer(&vBufferDesc, &vInitData, m_vertexBuffer.GetAddressOf());
-        if (FAILED(hr))
-        {
-            MessageBox(
-                nullptr,
-                L"Call to CreateVertexBuffer failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-            return hr;
-        }
+        // Create the vertex, index and constant buffer
+        hr = initialize(pDevice, pImmediateContext);
 
         // Create the animation buffer
         D3D11_BUFFER_DESC aBufferDesc =
@@ -200,37 +174,6 @@ namespace library
                 NULL
             );
             return hr;
-        }
-
-        // Create the constant buffer
-        D3D11_BUFFER_DESC cBufferDesc =
-        {
-            .ByteWidth = sizeof(CBChangesEveryFrame),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
-            .CPUAccessFlags = 0u,
-            .MiscFlags = 0u,
-            .StructureByteStride = 0u
-        };
-        CBChangesEveryFrame cbChangesEveryFrame =
-        {
-            .World = XMMatrixTranspose(m_world),
-            .OutputColor = m_outputColor
-        };
-        D3D11_SUBRESOURCE_DATA cInitData =
-        {
-            .pSysMem = &cbChangesEveryFrame,
-            .SysMemPitch = 0u,
-            .SysMemSlicePitch = 0u
-        };
-        if (FAILED(pDevice->CreateBuffer(&cBufferDesc, &cInitData, m_constantBuffer.GetAddressOf())))
-        {
-            MessageBox(
-                nullptr,
-                L"Call to CreateChangesEveryFrameBuffer failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
         }
 
         // Create the skinning constant buffer
@@ -773,6 +716,24 @@ namespace library
             };
 
             m_aVertices.push_back(vertex);
+        }
+
+        // Populate the index buffer
+        for (UINT i = 0u; i < pMesh->mNumFaces; ++i)
+        {
+            const aiFace& face = pMesh->mFaces[i];
+            assert(face.mNumIndices == 3u);
+
+            WORD aIndices[3] =
+            {
+                static_cast<WORD>(face.mIndices[0]),
+                static_cast<WORD>(face.mIndices[1]),
+                static_cast<WORD>(face.mIndices[2]),
+            };
+
+            m_aIndices.push_back(aIndices[0]);
+            m_aIndices.push_back(aIndices[1]);
+            m_aIndices.push_back(aIndices[2]);
         }
 
         initMeshBones(uMeshIndex, pMesh);
