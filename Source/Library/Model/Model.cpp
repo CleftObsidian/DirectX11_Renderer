@@ -77,9 +77,6 @@ namespace library
                  m_aBoneInfo, m_aTransforms, m_boneNameToIndexMap,
                  m_pScene, m_timeSinceLoaded, m_globalInverseTransform].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Model::Model definition (remove the comment)
-    --------------------------------------------------------------------*/
     Model::Model(_In_ const std::filesystem::path& filePath)
         : Renderable(XMFLOAT4(1.0f, 1.0f, 1.0f, 1.0f))
         , m_filePath(filePath)
@@ -115,9 +112,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Model::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Model::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
         HRESULT hr = S_OK;
@@ -181,7 +175,7 @@ namespace library
         {
             .ByteWidth = static_cast<UINT>(sizeof(CBSkinning)),
             .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_VERTEX_BUFFER,
+            .BindFlags = D3D11_BIND_CONSTANT_BUFFER,
             .CPUAccessFlags = 0u,
             .MiscFlags = 0u,
             .StructureByteStride = 0u
@@ -211,9 +205,6 @@ namespace library
 
       Modifies: [m_aTransforms].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Model::Update definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Model::Update(_In_ FLOAT deltaTime)
     {
         m_timeSinceLoaded += deltaTime;
@@ -326,9 +317,6 @@ namespace library
                     Pointer to an assimp scene object that contains the
                     mesh information
      M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-       TODO: Model::countVerticesAndIndices definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Model::countVerticesAndIndices(_Inout_ UINT& uOutNumVertices, _Inout_ UINT& uOutNumIndices, _In_ const aiScene* pScene)
     {
         m_aMeshes.resize(pScene->mNumMeshes);
@@ -560,9 +548,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Model::initFromScene definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Model::initFromScene(
         _In_ ID3D11Device* pDevice,
         _In_ ID3D11DeviceContext* pImmediateContext,
@@ -648,9 +633,6 @@ namespace library
       Args:     const aiScene* pScene
                   Assimp scene
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Model::initMeshBones definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Model::initMeshBones(_In_ UINT uMeshIndex, _In_ const aiMesh* pMesh)
     {
         for (UINT i = 0u; i < pMesh->mNumBones; ++i)
@@ -694,9 +676,6 @@ namespace library
       Args:     const aiMesh* pMesh
                   Point to an assimp mesh object
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Model::initSingleMesh definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Model::initSingleMesh(_In_ UINT uMeshIndex, _In_ const aiMesh* pMesh)
     {
         const aiVector3D zero3d(0.0f, 0.0f, 0.0f);
@@ -786,9 +765,6 @@ namespace library
                 const aiNodeAnim* pNodeAnim
                   Pointer to an assimp node anim object
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Model::interpolateRotation definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Model::interpolateRotation(_Inout_ XMVECTOR& outQuaternion, _In_ FLOAT animationTimeTicks, _In_ const aiNodeAnim* pNodeAnim)
     {
         if (pNodeAnim->mNumRotationKeys == 1)
@@ -826,9 +802,6 @@ namespace library
                 const aiNodeAnim* pNodeAnim
                   Pointer to an assimp node anim object
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Model::interpolateScaling definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Model::interpolateScaling(_Inout_ XMFLOAT3& outScale, _In_ FLOAT animationTimeTicks, _In_ const aiNodeAnim* pNodeAnim)
     {
         if (pNodeAnim->mNumScalingKeys == 1)
@@ -1030,9 +1003,6 @@ namespace library
                 const XMMATRIX& parentTransform
                   Parent transform in hierarchy
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Model::readNodeHierarchy definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Model::readNodeHierarchy(_In_ FLOAT animationTimeTicks, _In_ const aiNode* pNode, _In_ const XMMATRIX& parentTransform)
     {
         PCSTR NodeName(pNode->mName.C_Str());
@@ -1058,15 +1028,15 @@ namespace library
             XMMATRIX translationM = XMMatrixTranslation(translation.x, translation.y, translation.z);
 
             // Combine the above transformations
-            NodeTransform = translationM * rotationM * scalingM;
+            NodeTransform = scalingM * rotationM * translationM;
         }
 
-        XMMATRIX globalTransformation = parentTransform * NodeTransform;
+        XMMATRIX globalTransformation = NodeTransform * parentTransform;
 
         if (m_boneNameToIndexMap.find(NodeName) != m_boneNameToIndexMap.end())
         {
             UINT uBoneIndex = m_boneNameToIndexMap[NodeName];
-            m_aBoneInfo[uBoneIndex].FinalTransformation = m_globalInverseTransform * globalTransformation * m_aBoneInfo[uBoneIndex].OffsetMatrix;
+            m_aBoneInfo[uBoneIndex].FinalTransformation = m_aBoneInfo[uBoneIndex].OffsetMatrix * globalTransformation * m_globalInverseTransform;
         }
 
         for (UINT i = 0u; i < pNode->mNumChildren; ++i)

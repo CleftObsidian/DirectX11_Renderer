@@ -15,9 +15,6 @@ namespace library
                  m_projection, m_renderables, m_vertexShaders,
                  m_pixelShaders].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Renderer definition (remove the comment)
-    --------------------------------------------------------------------*/
     Renderer::Renderer()
         : m_driverType(D3D_DRIVER_TYPE_NULL)
         , m_featureLevel(D3D_FEATURE_LEVEL_11_0)
@@ -63,9 +60,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderer::Initialize(_In_ HWND hWnd)
     {
         HRESULT hr = S_OK;
@@ -461,9 +455,6 @@ namespace library
       Returns:  HRESULT
                   Status code.
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::AddModel definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderer::AddModel(_In_ PCWSTR pszModelName, _In_ const std::shared_ptr<Model>& pModel)
     {
         if (m_models.find(pszModelName) != m_models.end())
@@ -670,9 +661,6 @@ namespace library
       Args:     FLOAT deltaTime
                   Time difference of a frame
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Update definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Renderer::Update(_In_ FLOAT deltaTime)
     {
         // Update the renderables
@@ -707,9 +695,6 @@ namespace library
 
       Summary:  Render the frame
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Render definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Renderer::Render()
     {
         // Clear the back buffer
@@ -875,11 +860,20 @@ namespace library
             };
             m_immediateContext->UpdateSubresource(model->second->GetConstantBuffer().Get(), 0u, nullptr, &cbChangesEveryFrame, 0u, 0u);
 
+            // Update skinning constant buffer
+            CBSkinning cbSkinning = {};
+            for (UINT i = 0; i < model->second->GetBoneTransforms().size(); ++i)
+            {
+                cbSkinning.BoneTransforms[i] = XMMatrixTranspose(model->second->GetBoneTransforms()[i]);
+            }
+            m_immediateContext->UpdateSubresource(model->second->GetSkinningConstantBuffer().Get(), 0u, nullptr, &cbSkinning, 0u, 0u);
+
             // Set the vertex shader and constant buffers
             m_immediateContext->VSSetShader(model->second->GetVertexShader().Get(), nullptr, 0u);
             m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
             m_immediateContext->VSSetConstantBuffers(2u, 1u, model->second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(4u, 1u, model->second->GetSkinningConstantBuffer().GetAddressOf());
 
             // Set the pixel shader and constant buffers
             m_immediateContext->PSSetShader(model->second->GetPixelShader().Get(), nullptr, 0u);
@@ -1019,9 +1013,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::SetVertexShaderOfModel definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderer::SetVertexShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszVertexShaderName)
     {
         if (m_models.find(pszModelName) == m_models.end())
@@ -1065,9 +1056,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::SetPixelShaderOfModel definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderer::SetPixelShaderOfModel(_In_ PCWSTR pszModelName, _In_ PCWSTR pszPixelShaderName)
     {
         if (m_models.find(pszModelName) == m_models.end())
