@@ -276,7 +276,7 @@ namespace library
             return hr;
         }
 
-        m_camera.Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
+        m_camera.Initialize(m_d3dDevice.Get());
 
         if (!m_scenes.contains(m_pszMainSceneName))
         {
@@ -414,7 +414,259 @@ namespace library
     /*--------------------------------------------------------------------
       TODO: Renderable::Render definition (remove the comment)
     --------------------------------------------------------------------*/
+    void Renderer::Render()
+    {
+        // Clear the back buffer
+        m_immediateContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::MidnightBlue);
 
+        // Clear the depth buffer to 1.0 (max depth)
+        m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
+
+        // Update camera constant buffer
+        CBChangeOnCameraMovement cbChangeOnCameraMovement =
+        {
+            .View = XMMatrixTranspose(m_camera.GetView()),
+        };
+        XMStoreFloat4(&cbChangeOnCameraMovement.CameraPosition, m_camera.GetEye());
+        m_immediateContext->UpdateSubresource(m_camera.GetConstantBuffer().Get(), 0u, nullptr, &cbChangeOnCameraMovement, 0u, 0u);
+
+        // Update lights constant buffer
+        CBLights cbLights = {};
+        for (UINT i = 0u; i < NUM_LIGHTS; ++i)
+        {
+            cbLights.LightPositions[i] = m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetPosition();
+            cbLights.LightColors[i] = m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetColor();
+        };
+        m_immediateContext->UpdateSubresource(m_cbLights.Get(), 0u, nullptr, &cbLights, 0u, 0u);
+
+        // For all renderables
+        std::unordered_map<std::wstring, std::shared_ptr<Renderable>>::iterator renderable;
+        for (renderable = m_scenes[m_pszMainSceneName]->GetRenderables().begin(); renderable != m_scenes[m_pszMainSceneName]->GetRenderables().end(); ++renderable)
+        {
+            // Set the vertex buffer
+            UINT uStride = sizeof(SimpleVertex);
+            UINT uOffset = 0u;
+            m_immediateContext->IASetVertexBuffers(0u, 1u, renderable->second->GetVertexBuffer().GetAddressOf(), &uStride, &uOffset);
+            
+            // Set the normal buffer
+            uStride = sizeof(NormalData);
+            m_immediateContext->IASetVertexBuffers(1u, 1u, renderable->second->GetNormalBuffer().GetAddressOf(), &uStride, &uOffset);
+
+            // Set the index buffer
+            m_immediateContext->IASetIndexBuffer(renderable->second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
+
+            // Set primitive topology
+            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            // Set the input layout
+            m_immediateContext->IASetInputLayout(renderable->second->GetVertexLayout().Get());
+
+            // Update renderable constant buffer
+            CBChangesEveryFrame cbChangesEveryFrame =
+            {
+                .World = XMMatrixTranspose(renderable->second->GetWorldMatrix()),
+                .OutputColor = renderable->second->GetOutputColor(),
+                .HasNormalMap = renderable->second->HasNormalMap()
+            };
+            m_immediateContext->UpdateSubresource(renderable->second->GetConstantBuffer().Get(), 0u, nullptr, &cbChangesEveryFrame, 0u, 0u);
+
+            // Set the vertex shader and constant buffers
+            m_immediateContext->VSSetShader(renderable->second->GetVertexShader().Get(), nullptr, 0u);
+            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
+
+            // Set the pixel shader and constant buffers
+            m_immediateContext->PSSetShader(renderable->second->GetPixelShader().Get(), nullptr, 0u);
+            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(2u, 1u, renderable->second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
+
+            if (renderable->second->HasTexture())
+            {
+                for (UINT i = 0u; i < renderable->second->GetNumMeshes(); ++i)
+                {
+                    const UINT materialIndex = renderable->second->GetMesh(i).uMaterialIndex;
+                    if (renderable->second->GetMaterial(materialIndex)->pDiffuse)
+                    {
+                        // Set texture resource view of the renderable into the pixel shader
+                        m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetMaterial(materialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetShaderResources(1u, 1u, renderable->second->GetMaterial(materialIndex)->pNormal->GetTextureResourceView().GetAddressOf());
+
+                        // Set sampler state of the renderable into the pixel shader
+                        m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetMaterial(materialIndex)->pDiffuse->GetSamplerState().GetAddressOf());
+                        m_immediateContext->PSSetSamplers(1u, 1u, renderable->second->GetMaterial(materialIndex)->pNormal->GetSamplerState().GetAddressOf());
+                    }
+
+                    // Render the triangles
+                    m_immediateContext->DrawIndexed(renderable->second->GetMesh(i).uNumIndices,
+                                                    renderable->second->GetMesh(i).uBaseIndex,
+                                                    renderable->second->GetMesh(i).uBaseVertex);
+                }
+            }
+            else
+            {
+                // Render the triangles
+                m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
+            }
+        }
+
+        // For all voxels in main scene
+        std::vector<std::shared_ptr<Voxel>>::iterator voxel;
+        for (voxel = m_scenes[m_pszMainSceneName]->GetVoxels().begin(); voxel != m_scenes[m_pszMainSceneName]->GetVoxels().end(); ++voxel)
+        {
+            // Set the vertex buffer
+            UINT uStride = sizeof(SimpleVertex);
+            UINT uOffset = 0u;
+            m_immediateContext->IASetVertexBuffers(0u, 1u, voxel->get()->GetVertexBuffer().GetAddressOf(), &uStride, &uOffset);
+
+            // Set the normal buffer
+            uStride = sizeof(NormalData);
+            m_immediateContext->IASetVertexBuffers(1u, 1u, voxel->get()->GetNormalBuffer().GetAddressOf(), &uStride, &uOffset);
+
+            // Set the instance buffer
+            uStride = sizeof(InstanceData);
+            m_immediateContext->IASetVertexBuffers(2u, 1u, voxel->get()->GetInstanceBuffer().GetAddressOf(), &uStride, &uOffset);
+
+            // Set the index buffer
+            m_immediateContext->IASetIndexBuffer(voxel->get()->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
+
+            // Set primitive topology
+            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            // Set the input layout
+            m_immediateContext->IASetInputLayout(voxel->get()->GetVertexLayout().Get());
+
+            // Update voxel constant buffer
+            CBChangesEveryFrame cbChangesEveryFrame =
+            {
+                .World = XMMatrixTranspose(voxel->get()->GetWorldMatrix()),
+                .OutputColor = voxel->get()->GetOutputColor(),
+                .HasNormalMap = voxel->get()->HasNormalMap()
+            };
+            m_immediateContext->UpdateSubresource(voxel->get()->GetConstantBuffer().Get(), 0u, nullptr, &cbChangesEveryFrame, 0u, 0u);
+
+            // Set the vertex shader and constant buffers
+            m_immediateContext->VSSetShader(voxel->get()->GetVertexShader().Get(), nullptr, 0u);
+            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(2u, 1u, voxel->get()->GetConstantBuffer().GetAddressOf());
+
+            // Set the pixel shader and constant buffers
+            m_immediateContext->PSSetShader(voxel->get()->GetPixelShader().Get(), nullptr, 0u);
+            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(2u, 1u, voxel->get()->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
+
+            if (voxel->get()->HasTexture())
+            {
+                for (UINT i = 0u; i < voxel->get()->GetNumMeshes(); ++i)
+                {
+                    const UINT materialIndex = voxel->get()->GetMesh(i).uMaterialIndex;
+                    if (voxel->get()->GetMaterial(materialIndex)->pDiffuse)
+                    {
+                        // Set texture resource view of the renderable into the pixel shader
+                        m_immediateContext->PSSetShaderResources(0u, 1u, voxel->get()->GetMaterial(materialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetShaderResources(1u, 1u, voxel->get()->GetMaterial(materialIndex)->pNormal->GetTextureResourceView().GetAddressOf());
+
+                        // Set sampler state of the renderable into the pixel shader
+                        m_immediateContext->PSSetSamplers(0u, 1u, voxel->get()->GetMaterial(materialIndex)->pDiffuse->GetSamplerState().GetAddressOf());
+                        m_immediateContext->PSSetSamplers(1u, 1u, voxel->get()->GetMaterial(materialIndex)->pNormal->GetSamplerState().GetAddressOf());
+                    }
+
+                    // Render the triangles
+                    m_immediateContext->DrawIndexed(voxel->get()->GetMesh(i).uNumIndices,
+                                                    voxel->get()->GetMesh(i).uBaseIndex,
+                                                    voxel->get()->GetMesh(i).uBaseVertex);
+                }
+            }
+            else
+            {
+                // Render the triangles
+                m_immediateContext->DrawIndexed(voxel->get()->GetNumIndices(), 0u, 0);
+            }
+        }
+
+        // For all models
+        std::unordered_map<std::wstring, std::shared_ptr<Model>>::iterator model;
+        for (model = m_scenes[m_pszMainSceneName]->GetModels().begin(); model != m_scenes[m_pszMainSceneName]->GetModels().end(); ++model)
+        {
+            // Set the vertex buffer
+            UINT uStride = sizeof(SimpleVertex);
+            UINT uOffset = 0u;
+            m_immediateContext->IASetVertexBuffers(0u, 1u, model->second->GetVertexBuffer().GetAddressOf(), &uStride, &uOffset);
+
+            uStride = sizeof(AnimationData);
+            m_immediateContext->IASetVertexBuffers(1u, 1u, model->second->GetAnimationBuffer().GetAddressOf(), &uStride, &uOffset);
+
+            // Set the index buffer
+            m_immediateContext->IASetIndexBuffer(model->second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
+
+            // Set primitive topology
+            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+            // Set the input layout
+            m_immediateContext->IASetInputLayout(model->second->GetVertexLayout().Get());
+
+            // Update renderable constant buffer
+            CBChangesEveryFrame cbChangesEveryFrame =
+            {
+                .World = XMMatrixTranspose(model->second->GetWorldMatrix()),
+                .OutputColor = model->second->GetOutputColor()
+            };
+            m_immediateContext->UpdateSubresource(model->second->GetConstantBuffer().Get(), 0u, nullptr, &cbChangesEveryFrame, 0u, 0u);
+
+            // Update skinning constant buffer
+            CBSkinning cbSkinning = {};
+            for (UINT i = 0; i < model->second->GetBoneTransforms().size(); ++i)
+            {
+                cbSkinning.BoneTransforms[i] = XMMatrixTranspose(model->second->GetBoneTransforms()[i]);
+            }
+            m_immediateContext->UpdateSubresource(model->second->GetSkinningConstantBuffer().Get(), 0u, nullptr, &cbSkinning, 0u, 0u);
+
+            // Set the vertex shader and constant buffers
+            m_immediateContext->VSSetShader(model->second->GetVertexShader().Get(), nullptr, 0u);
+            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(2u, 1u, model->second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(4u, 1u, model->second->GetSkinningConstantBuffer().GetAddressOf());
+
+            // Set the pixel shader and constant buffers
+            m_immediateContext->PSSetShader(model->second->GetPixelShader().Get(), nullptr, 0u);
+            m_immediateContext->PSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(2u, 1u, model->second->GetConstantBuffer().GetAddressOf());
+            m_immediateContext->PSSetConstantBuffers(3u, 1u, m_cbLights.GetAddressOf());
+
+            if (model->second->HasTexture())
+            {
+                for (UINT i = 0u; i < model->second->GetNumMeshes(); ++i)
+                {
+                    const UINT materialIndex = model->second->GetMesh(i).uMaterialIndex;
+                    if (model->second->GetMaterial(materialIndex)->pDiffuse)
+                    {
+                        // Set texture resource view of the renderable into the pixel shader
+                        m_immediateContext->PSSetShaderResources(0u, 1u, model->second->GetMaterial(materialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+
+                        // Set sampler state of the renderable into the pixel shader
+                        m_immediateContext->PSSetSamplers(0u, 1u, model->second->GetMaterial(materialIndex)->pDiffuse->GetSamplerState().GetAddressOf());
+                    }
+
+                    // Render the triangles
+                    m_immediateContext->DrawIndexed(model->second->GetMesh(i).uNumIndices,
+                                                    model->second->GetMesh(i).uBaseIndex,
+                                                    model->second->GetMesh(i).uBaseVertex);
+                }
+            }
+            else
+            {
+                // Render the triangles
+                m_immediateContext->DrawIndexed(model->second->GetNumIndices(), 0u, 0);
+            }
+        }
+
+        // Present the information rendered to the back buffer to the front buffer
+        m_swapChain->Present(0u, 0u);
+    }
 
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Renderer::GetDriverType

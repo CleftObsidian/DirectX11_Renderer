@@ -4,10 +4,27 @@
 
 namespace library
 {
-#define NUM_LIGHTS (2)
-#define MAX_NUM_BONES (256)
-#define MAX_NUM_BONES_PER_VERTEX (16)
+    #define NUM_LIGHTS (2)
+    #define MAX_NUM_BONES (256)
+    #define MAX_NUM_BONES_PER_VERTEX (16)
 
+    struct SimpleVertex
+    {
+        XMFLOAT3 Position;
+        XMFLOAT2 TexCoord;
+        XMFLOAT3 Normal;
+    };
+
+    struct InstanceData
+    {
+        XMMATRIX Transformation;
+    };
+
+    struct AnimationData
+    {
+        XMUINT4 aBoneIndices;
+        XMFLOAT4 aBoneWeights;
+    };
 
     /*S+S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S
       Struct:   NormalData
@@ -19,6 +36,17 @@ namespace library
     {
         XMFLOAT3 Tangent;
         XMFLOAT3 Bitangent;
+    };
+
+    struct CBChangeOnCameraMovement
+    {
+        XMMATRIX View;
+        XMFLOAT4 CameraPosition;
+    };
+
+    struct CBChangeOnResize
+    {
+        XMMATRIX Projection;
     };
 
     /*S+S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S
@@ -33,4 +61,14 @@ namespace library
         BOOL HasNormalMap;
     };
 
+    struct CBSkinning
+    {
+        XMMATRIX BoneTransforms[MAX_NUM_BONES];
+    };
+
+    struct CBLights
+    {
+        XMFLOAT4 LightPositions[NUM_LIGHTS];
+        XMFLOAT4 LightColors[NUM_LIGHTS];
+    };
 }
