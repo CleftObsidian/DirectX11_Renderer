@@ -1,4 +1,4 @@
-﻿/*+===================================================================
+/*+===================================================================
   File:      COMMON.H
 
   Summary:   Common header file that contains common header files and 
@@ -50,7 +50,7 @@ constexpr LPCWSTR PSZ_COURSE_TITLE = L"Game Graphics Programming";
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
-#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded)
+#define ASSIMP_LOAD_FLAGS (aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices | aiProcess_ConvertToLeftHanded | aiProcess_CalcTangentSpace)
 
 namespace library
 {

@@ -4,54 +4,33 @@
 
 namespace library
 {
-    #define NUM_LIGHTS (2)
-    #define MAX_NUM_BONES (256)
-    #define MAX_NUM_BONES_PER_VERTEX (16)
+#define NUM_LIGHTS (2)
+#define MAX_NUM_BONES (256)
+#define MAX_NUM_BONES_PER_VERTEX (16)
 
-    struct SimpleVertex
+
+    /*S+S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S
+      Struct:   NormalData
+
+      Summary:  NormalData structure containing tangent space vetors 
+                of the vertex
+    S---S---S---S---S---S---S---S---S---S---S---S---S---S---S---S---S-S*/
+    struct NormalData
     {
-        XMFLOAT3 Position;
-        XMFLOAT2 TexCoord;
-        XMFLOAT3 Normal;
+        XMFLOAT3 Tangent;
+        XMFLOAT3 Bitangent;
     };
 
-    struct InstanceData
-    {
-        XMMATRIX Transformation;
-    };
+    /*S+S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S+++S
+      Struct:   CBChangesEveryFrame
 
-    struct AnimationData
-    {
-        XMUINT4 aBoneIndices;
-        XMFLOAT4 aBoneWeights;
-    };
-
-    struct CBChangeOnCameraMovement
-    {
-        XMMATRIX View;
-        XMFLOAT4 CameraPosition;
-    };
-
-    struct CBChangeOnResize
-    {
-        XMMATRIX Projection;
-    };
-
+      Summary:  Constant buffer containing world matrix
+    S---S---S---S---S---S---S---S---S---S---S---S---S---S---S---S---S-S*/
     struct CBChangesEveryFrame
     {
         XMMATRIX World;
         XMFLOAT4 OutputColor;
-    };
-
-    struct CBSkinning
-    {
-        XMMATRIX BoneTransforms[MAX_NUM_BONES];
-    };
-
-    struct CBLights
-    {
-        XMFLOAT4 LightPositions[NUM_LIGHTS];
-        XMFLOAT4 LightColors[NUM_LIGHTS];
+        BOOL HasNormalMap;
     };
 
 }
