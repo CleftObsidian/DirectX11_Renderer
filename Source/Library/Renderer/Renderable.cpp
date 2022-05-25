@@ -96,7 +96,7 @@ namespace library
             return hr;
         }
 
-        if (HasTexture() && !m_bHasNormalMap)
+        if (HasTexture() && (m_aNormalData.size() == 0))
         {
             calculateNormalMapVectors();
 
