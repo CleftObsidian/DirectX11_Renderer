@@ -84,7 +84,6 @@ struct VS_PHONG_INPUT
     float3 Normal : NORMAL;
     float3 Tangent : TANGENT;
     float3 Bitangent : BITANGENT;
-    row_major matrix Transform : INSTANCE_TRANSFORM;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C

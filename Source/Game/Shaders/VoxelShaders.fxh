@@ -124,6 +124,12 @@ PS_INPUT VSVoxel(VS_INPUT input)
     output.Normal = mul(float4(input.Normal, 0.0f), input.Transform).xyz;
     output.Normal = mul(float4(output.Normal, 0.0f), World).xyz;
     
+    if (HasNormalMap)
+    {
+        output.Tangent = normalize(mul(float4(input.Tangent, 0.0f), World).xyz);
+        output.Bitangent = normalize(mul(float4(input.Bitangent, 0.0f), World).xyz);
+    }
+    
     return output;
 }
 
@@ -168,5 +174,5 @@ float4 PSVoxel(PS_INPUT input) : SV_TARGET
         diffuse += saturate(dot(normal, lightDirection)) * LightColors[j];
     }
     
-    return float4(ambient + diffuse, 1.0f) * OutputColor;
+    return float4(ambient + diffuse, 1.0f) * diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
 }

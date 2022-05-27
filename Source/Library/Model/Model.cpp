@@ -319,7 +319,7 @@ namespace library
     void Model::countVerticesAndIndices(_Inout_ UINT& uOutNumVertices, _Inout_ UINT& uOutNumIndices, _In_ const aiScene* pScene)
     {
         m_aMeshes.resize(pScene->mNumMeshes);
-        m_aMaterials.resize(pScene->mNumMaterials);
+        //m_aMaterials.resize(pScene->mNumMaterials);
 
         UINT uNumVertices = 0u;
         UINT uNumIndices = 0u;
