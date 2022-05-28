@@ -96,37 +96,38 @@ namespace library
             return hr;
         }
 
-        if (HasTexture() && (m_aNormalData.size() == 0))
+        if ((HasTexture() > 0) && (m_aNormalData.size() == 0))
         {
+            // Compute tangent and bitangent vectors manually
             calculateNormalMapVectors();
+        }
 
-            // Create normal vertex buffer
-            D3D11_BUFFER_DESC nBufferDesc =
-            {
-                .ByteWidth = static_cast<UINT>(sizeof(NormalData) * m_aNormalData.size()),
-                .Usage = D3D11_USAGE_DEFAULT,
-                .BindFlags = D3D11_BIND_VERTEX_BUFFER,
-                .CPUAccessFlags = 0u,
-                .MiscFlags = 0u,
-                .StructureByteStride = 0u
-            };
-            D3D11_SUBRESOURCE_DATA nInitData =
-            {
-                .pSysMem = &m_aNormalData[0],
-                .SysMemPitch = 0u,
-                .SysMemSlicePitch = 0u
-            };
-            hr = pDevice->CreateBuffer(&nBufferDesc, &nInitData, m_normalBuffer.GetAddressOf());
-            if (FAILED(hr))
-            {
-                MessageBox(
-                    nullptr,
-                    L"Call to CreateNormalBuffer failed!",
-                    L"Game Graphics Programming",
-                    NULL
-                );
-                return hr;
-            }
+        // Create normal vertex buffer
+        D3D11_BUFFER_DESC nBufferDesc =
+        {
+            .ByteWidth = static_cast<UINT>(sizeof(NormalData) * m_aNormalData.size()),
+            .Usage = D3D11_USAGE_DEFAULT,
+            .BindFlags = D3D11_BIND_VERTEX_BUFFER,
+            .CPUAccessFlags = 0u,
+            .MiscFlags = 0u,
+            .StructureByteStride = 0u
+        };
+        D3D11_SUBRESOURCE_DATA nInitData =
+        {
+            .pSysMem = &m_aNormalData[0],
+            .SysMemPitch = 0u,
+            .SysMemSlicePitch = 0u
+        };
+        hr = pDevice->CreateBuffer(&nBufferDesc, &nInitData, m_normalBuffer.GetAddressOf());
+        if (FAILED(hr))
+        {
+            MessageBox(
+                nullptr,
+                L"Call to CreateNormalBuffer failed!",
+                L"Game Graphics Programming",
+                NULL
+            );
+            return hr;
         }
 
         // Create index buffer
@@ -170,7 +171,8 @@ namespace library
         CBChangesEveryFrame cbChangesEveryFrame =
         {
             .World = XMMatrixTranspose(m_world),
-            .OutputColor = m_outputColor
+            .OutputColor = m_outputColor,
+            .HasNormalMap = m_bHasNormalMap
         };
         D3D11_SUBRESOURCE_DATA cInitData =
         {
