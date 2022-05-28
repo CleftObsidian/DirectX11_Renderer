@@ -69,6 +69,8 @@ namespace library
 
         D3D_DRIVER_TYPE GetDriverType() const;
 
+        void Debug();
+
     private:
         D3D_DRIVER_TYPE m_driverType;
         D3D_FEATURE_LEVEL m_featureLevel;

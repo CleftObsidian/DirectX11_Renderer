@@ -9,9 +9,6 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Declare texture array and sampler state array for diffuse texture and normal texture (remove the comment)
---------------------------------------------------------------------*/
 Texture2D diffuseTexture : register(t0);
 Texture2D normalTexture : register(t1);
 SamplerState diffuseSamplers : register(s0);
@@ -46,9 +43,6 @@ cbuffer cbChangeOnResize : register(b1)
 
   Summary:  Constant buffer used for world transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangesEveryFrame definition (remove the comment)
---------------------------------------------------------------------*/
 cbuffer cbChangesEveryFrame : register(b2)
 {
     matrix World;
@@ -74,9 +68,6 @@ cbuffer cbLights : register(b3)
   Summary:  Used as the input to the vertex shader, 
             instance data included
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: VS_INPUT definition (remove the comment)
---------------------------------------------------------------------*/
 struct VS_INPUT
 {
     float4 Position : POSITION;
@@ -93,9 +84,6 @@ struct VS_INPUT
   Summary:  Used as the input to the pixel shader, output of the 
             vertex shader
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: PS_INPUT definition (remove the comment)
---------------------------------------------------------------------*/
 struct PS_INPUT
 {
     float4 Position : SV_POSITION;
@@ -109,9 +97,6 @@ struct PS_INPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Vertex Shader function VSVoxel definition (remove the comment)
---------------------------------------------------------------------*/
 PS_INPUT VSVoxel(VS_INPUT input)
 {
     PS_INPUT output = (PS_INPUT) 0;
@@ -120,6 +105,8 @@ PS_INPUT VSVoxel(VS_INPUT input)
     output.WorldPosition = output.Position;
     output.Position = mul(output.Position, View);
     output.Position = mul(output.Position, Projection);
+    
+    output.TexCoord = input.TexCoord;
     
     output.Normal = mul(float4(input.Normal, 0.0f), input.Transform).xyz;
     output.Normal = mul(float4(output.Normal, 0.0f), World).xyz;
@@ -136,9 +123,6 @@ PS_INPUT VSVoxel(VS_INPUT input)
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Pixel Shader function PSVoxel definition (remove the comment)
---------------------------------------------------------------------*/
 float4 PSVoxel(PS_INPUT input) : SV_TARGET
 {
     float3 normal = normalize(input.Normal);
@@ -155,7 +139,7 @@ float4 PSVoxel(PS_INPUT input) : SV_TARGET
         float3 bumpNormal = (bumpMap.x * input.Tangent) + (bumpMap.y * input.Bitangent) + (bumpMap.z * normal);
         
         // Normalize the resulting bump normal and replace existing normal
-        normal = normalize(normal);
+        normal = normalize(bumpNormal);
     }
     
     // ambient

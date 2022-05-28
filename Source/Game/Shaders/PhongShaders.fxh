@@ -10,9 +10,6 @@
 //--------------------------------------------------------------------------------------
 // Global Variables
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Declare texture array and sampler state array for diffuse texture and normal texture (remove the comment)
---------------------------------------------------------------------*/
 Texture2D diffuseTexture : register(t0);
 Texture2D normalTexture : register(t1);
 SamplerState diffuseSamplers : register(s0);
@@ -47,9 +44,6 @@ cbuffer cbChangeOnResize : register(b1)
 
   Summary:  Constant buffer used for world transformation
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: cbChangesEveryFrame definition (remove the comment)
---------------------------------------------------------------------*/
 cbuffer cbChangesEveryFrame : register(b2)
 {
     matrix World;
@@ -74,9 +68,6 @@ cbuffer cbLights : register(b3)
 
   Summary:  Used as the input to the vertex shader
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: VS_PHONG_INPUT definition (remove the comment)
---------------------------------------------------------------------*/
 struct VS_PHONG_INPUT
 {
     float4 Position : POSITION;
@@ -84,7 +75,6 @@ struct VS_PHONG_INPUT
     float3 Normal : NORMAL;
     float3 Tangent : TANGENT;
     float3 Bitangent : BITANGENT;
-    row_major matrix mTransform : INSTANCE_TRANSFORM;
 };
 
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
@@ -93,9 +83,6 @@ struct VS_PHONG_INPUT
   Summary:  Used as the input to the pixel shader, output of the 
             vertex shader
 C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C---C-C*/
-/*--------------------------------------------------------------------
-  TODO: PS_PHONG_INPUT definition (remove the comment)
---------------------------------------------------------------------*/
 struct PS_PHONG_INPUT
 {
     float4 Position : SV_POSITION;
@@ -120,9 +107,6 @@ struct PS_LIGHT_CUBE_INPUT
 //--------------------------------------------------------------------------------------
 // Vertex Shader
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Vertex Shader function VSPhong definition (remove the comment)
---------------------------------------------------------------------*/
 PS_PHONG_INPUT VSPhong(VS_PHONG_INPUT input)
 {
     PS_PHONG_INPUT output = (PS_PHONG_INPUT) 0;
@@ -157,9 +141,6 @@ PS_LIGHT_CUBE_INPUT VSLightCube(VS_PHONG_INPUT input)
 //--------------------------------------------------------------------------------------
 // Pixel Shader
 //--------------------------------------------------------------------------------------
-/*--------------------------------------------------------------------
-  TODO: Pixel Shader function PSPhong definition (remove the comment)
---------------------------------------------------------------------*/
 float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
 {
     float3 normal = normalize(input.Normal);
@@ -176,7 +157,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_TARGET
         float3 bumpNormal = (bumpMap.x * input.Tangent) + (bumpMap.y * input.Bitangent) + (bumpMap.z * normal);
         
         // Normalize the resulting bump normal and replace existing normal
-        normal = normalize(normal);
+        normal = normalize(bumpNormal);
     }
     
     // ambient

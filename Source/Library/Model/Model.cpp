@@ -138,9 +138,6 @@ namespace library
             OutputDebugString(L"\n");
         }
 
-        // Create the vertex, index and constant buffer
-        hr = initialize(pDevice, pImmediateContext);
-
         // Create the animation buffer
         D3D11_BUFFER_DESC aBufferDesc =
         {
@@ -690,9 +687,6 @@ namespace library
                 const aiMesh* pMesh
                   Point to an assimp mesh object
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Model::initSingleMesh definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Model::initSingleMesh(_In_ UINT uMeshIndex, _In_ const aiMesh* pMesh)
     {
         const aiVector3D zero3d(0.0f, 0.0f, 0.0f);

@@ -21,9 +21,6 @@ namespace library
                  m_pixelShader, m_outputColor, m_world, m_bHasNormalMap
                  m_aNormalData].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::Renderable definition (remove the comment)
-    --------------------------------------------------------------------*/
     Renderable::Renderable(_In_ const XMFLOAT4& outputColor)
         : m_vertexBuffer(nullptr)
         , m_indexBuffer(nullptr)
@@ -60,9 +57,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderable::initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
         UNREFERENCED_PARAMETER(pImmediateContext);
@@ -200,9 +194,6 @@ namespace library
 
       Modifies: [m_aNormalData].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::calculateNormalMapVectors definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Renderable::calculateNormalMapVectors()
     {
         UINT uNumFaces = GetNumIndices() / 3u;
@@ -464,9 +455,6 @@ namespace library
       Returns:  ComPtr<ID3D11Buffer>&
                   Normal buffer
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::GetNormalBuffer definition (remove the comment)
-    --------------------------------------------------------------------*/
     ComPtr<ID3D11Buffer>& Renderable::GetNormalBuffer()
     {
         return m_normalBuffer;
@@ -529,9 +517,6 @@ namespace library
       Returns:  std::shared_ptr<Material>&
                   Material
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::GetMaterial definition (remove the comment)
-    --------------------------------------------------------------------*/
     const std::shared_ptr<Material>& Renderable::GetMaterial(UINT uIndex) const
     {
         assert(uIndex < m_aMaterials.size());
@@ -691,9 +676,6 @@ namespace library
 
       Returns:  BOOL
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::HasNormalMap definition (remove the comment)
-    --------------------------------------------------------------------*/
     BOOL Renderable::HasNormalMap() const
     {
         return m_bHasNormalMap;

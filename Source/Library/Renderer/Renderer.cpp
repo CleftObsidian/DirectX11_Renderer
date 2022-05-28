@@ -411,9 +411,6 @@ namespace library
 
       Summary:  Render the frame
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderable::Render definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Renderer::Render()
     {
         // Clear the back buffer
@@ -587,15 +584,17 @@ namespace library
                     }
 
                     // Render the triangles
-                    m_immediateContext->DrawIndexed(voxel->get()->GetMesh(i).uNumIndices,
-                                                    voxel->get()->GetMesh(i).uBaseIndex,
-                                                    voxel->get()->GetMesh(i).uBaseVertex);
+                    m_immediateContext->DrawIndexedInstanced(voxel->get()->GetMesh(i).uNumIndices,
+                                                             voxel->get()->GetNumInstances(),
+                                                             voxel->get()->GetMesh(i).uBaseIndex,
+                                                             voxel->get()->GetMesh(i).uBaseVertex,
+                                                             0u);
                 }
             }
             else
             {
                 // Render the triangles
-                m_immediateContext->DrawIndexed(voxel->get()->GetNumIndices(), 0u, 0);
+                m_immediateContext->DrawIndexedInstanced(voxel->get()->GetNumIndices(), voxel->get()->GetNumInstances(), 0u, 0, 0u);
             }
         }
 
@@ -608,8 +607,13 @@ namespace library
             UINT uOffset = 0u;
             m_immediateContext->IASetVertexBuffers(0u, 1u, model->second->GetVertexBuffer().GetAddressOf(), &uStride, &uOffset);
 
+            // Set the normal buffer
+            uStride = sizeof(NormalData);
+            m_immediateContext->IASetVertexBuffers(1u, 1u, model->second->GetNormalBuffer().GetAddressOf(), &uStride, &uOffset);
+
+            // Set the animation buffer
             uStride = sizeof(AnimationData);
-            m_immediateContext->IASetVertexBuffers(1u, 1u, model->second->GetAnimationBuffer().GetAddressOf(), &uStride, &uOffset);
+            m_immediateContext->IASetVertexBuffers(3u, 1u, model->second->GetAnimationBuffer().GetAddressOf(), &uStride, &uOffset);
 
             // Set the index buffer
             m_immediateContext->IASetIndexBuffer(model->second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
@@ -700,5 +704,12 @@ namespace library
     D3D_DRIVER_TYPE Renderer::GetDriverType() const
     {
         return m_driverType;
+    }
+
+    void Renderer::Debug()
+    {
+        ComPtr<ID3D11Debug> dxgiDebug;
+        m_d3dDevice.As(&dxgiDebug);
+        dxgiDebug->ReportLiveDeviceObjects(D3D11_RLDO_DETAIL);
     }
 }
