@@ -22,10 +22,11 @@
 #include "Shader/PixelShader.h"
 #include "Shader/VertexShader.h"
 #include "Window/MainWindow.h"
+#include "Texture/RenderTexture.h"
+#include "Shader/ShadowVertexShader.h"
 
 namespace library
 {
-
     /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
       Class:    Renderer
 
@@ -62,14 +63,14 @@ namespace library
         HRESULT AddScene(_In_ PCWSTR pszSceneName, _In_ const std::shared_ptr<Scene>& scene);
         std::shared_ptr<Scene> GetSceneOrNull(_In_ PCWSTR pszSceneName);
         HRESULT SetMainScene(_In_ PCWSTR pszSceneName);
+        void SetShadowMapShaders(_In_ std::shared_ptr<ShadowVertexShader> vertexShader, _In_ std::shared_ptr<PixelShader> pixelShader);
 
         void HandleInput(_In_ const DirectionsInput& directions, _In_ const MouseRelativeMovement& mouseRelativeMovement, _In_ FLOAT deltaTime);
         void Update(_In_ FLOAT deltaTime);
         void Render();
+        void RenderSceneToTexture();
 
         D3D_DRIVER_TYPE GetDriverType() const;
-
-        void Debug();
 
     private:
         D3D_DRIVER_TYPE m_driverType;
@@ -85,6 +86,7 @@ namespace library
         ComPtr<ID3D11DepthStencilView> m_depthStencilView;
         ComPtr<ID3D11Buffer> m_cbChangeOnResize;
         ComPtr<ID3D11Buffer> m_cbLights;
+        ComPtr<ID3D11Buffer> m_cbShadowMatrix;
         PCWSTR m_pszMainSceneName;
         BYTE m_padding[8];
         Camera m_camera;
@@ -92,5 +94,8 @@ namespace library
 
         std::unordered_map<std::wstring, std::shared_ptr<Scene>> m_scenes;
         std::shared_ptr<Texture> m_invalidTexture;
+        std::shared_ptr<RenderTexture> m_shadowMapTexture;
+        std::shared_ptr<ShadowVertexShader> m_shadowVertexShader;
+        std::shared_ptr<PixelShader> m_shadowPixelShader;
     };
 }

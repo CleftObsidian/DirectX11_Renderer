@@ -13,7 +13,7 @@ namespace library
                  m_eye, m_at, m_up, m_rotation, m_view].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     Camera::Camera(_In_ const XMVECTOR& position)
-        : m_cbChangeOnCameraMovement(nullptr)
+        : m_cbChangeOnCameraMovement()
         , m_yaw(0.0f)
         , m_pitch(0.0f)
         , m_moveLeftRight(0.0f)

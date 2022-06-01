@@ -67,6 +67,9 @@
     <None Include="Shaders\SkinningShaders.fxh">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\ShadowShaders.fxh">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h">

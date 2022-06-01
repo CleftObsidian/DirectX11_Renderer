@@ -22,15 +22,15 @@ namespace library
                  m_aNormalData].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     Renderable::Renderable(_In_ const XMFLOAT4& outputColor)
-        : m_vertexBuffer(nullptr)
-        , m_indexBuffer(nullptr)
-        , m_constantBuffer(nullptr)
-        , m_normalBuffer(nullptr)
+        : m_vertexBuffer()
+        , m_indexBuffer()
+        , m_constantBuffer()
+        , m_normalBuffer()
         , m_aMeshes(std::vector<BasicMeshEntry>())
         , m_aMaterials(std::vector<std::shared_ptr<Material>>())
         , m_aNormalData(std::vector<NormalData>())
-        , m_vertexShader(nullptr)
-        , m_pixelShader(nullptr)
+        , m_vertexShader()
+        , m_pixelShader()
         , m_outputColor(outputColor)
         , m_padding()
         , m_world(XMMatrixIdentity())
@@ -90,7 +90,7 @@ namespace library
             return hr;
         }
 
-        if ((HasTexture() > 0) && (m_aNormalData.size() == 0))
+        if (m_aNormalData.empty())
         {
             // Compute tangent and bitangent vectors manually
             calculateNormalMapVectors();

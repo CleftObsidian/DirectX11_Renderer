@@ -15,8 +15,8 @@ namespace library
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     Texture::Texture(_In_ const std::filesystem::path& filePath)
         : m_filePath(filePath)
-        , m_textureRV(nullptr)
-        , m_samplerLinear(nullptr)
+        , m_textureRV()
+        , m_samplerLinear()
     {
         // empty
     }
