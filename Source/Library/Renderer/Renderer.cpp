@@ -785,7 +785,7 @@ namespace library
     void Renderer::RenderSceneToTexture()
     {
         //Unbind current pixel shader resources
-        ID3D11ShaderResourceView* const pSRV[1] = { NULL, };
+        ID3D11ShaderResourceView* const pSRV[1] = { NULL };
         m_immediateContext->PSSetShaderResources(0, 1, pSRV);
         m_immediateContext->PSSetShaderResources(1, 1, pSRV);
         m_immediateContext->PSSetShaderResources(2, 1, pSRV);

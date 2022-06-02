@@ -167,7 +167,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
 	--------------------------------------------------------------------*/
     float2 depthTexCoord = float2(0.0f, 0.0f);
     depthTexCoord.x = input.LightViewPosition.x / input.LightViewPosition.w / 2.0f + 0.5f;
-    depthTexCoord.y = input.LightViewPosition.y / input.LightViewPosition.w / 2.0f + 0.5f;
+    depthTexCoord.y = -input.LightViewPosition.y / input.LightViewPosition.w / 2.0f + 0.5f;
     
     float closestDepth = shadowMapTexture.Sample(shadowMapSampler, depthTexCoord).r;
     float currentDepth = input.LightViewPosition.z / input.LightViewPosition.w;
@@ -178,7 +178,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
     if (currentDepth > closestDepth + 0.001f)
     {
         float3 ambient = float3(0.1f, 0.1f, 0.1f);
-        return float4(ambient, 1.0f) * shadowMapTexture.Sample(shadowMapSampler, input.TexCoord);
+        return float4(ambient, 1.0f) * diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
     }
     else // Phong Shading
     {
@@ -227,8 +227,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
             specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * LightColors[k];
         }
     
-        //return float4(ambient + diffuse + specular, 1.0f) * diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
-        return shadowMapTexture.Sample(shadowMapSampler, input.TexCoord);
+        return float4(ambient + diffuse + specular, 1.0f) * diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
     }
 }
 

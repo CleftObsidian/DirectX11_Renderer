@@ -66,6 +66,5 @@ float4 PSShadow(PS_SHADOW_INPUT input) : SV_Target
 	--------------------------------------------------------------------*/
     float depthValue = input.DepthPosition.z / input.DepthPosition.w;
 	
-    //return float4(depthValue, depthValue, depthValue, 1.0f);
-    return input.Position;
+    return float4(depthValue, depthValue, depthValue, 1.0f);
 };
