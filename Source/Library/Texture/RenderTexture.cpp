@@ -52,10 +52,10 @@ namespace library
 			.Height = m_uHeight,
 			.MipLevels = 1u,
 			.ArraySize = 1u,
-			.Format = DXGI_FORMAT_D24_UNORM_S8_UINT,
-			.SampleDesc = {.Count = 1u, .Quality = 0u },
+			.Format = DXGI_FORMAT_R32G32B32A32_FLOAT,
+			.SampleDesc = {.Count = 1u},
 			.Usage = D3D11_USAGE_DEFAULT,
-			.BindFlags = D3D11_BIND_RENDER_TARGET,
+			.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE,
 			.CPUAccessFlags = 0u,
 			.MiscFlags = 0u
 		};
@@ -155,5 +155,4 @@ namespace library
 	{
 		return m_samplerClamp;
 	}
-
 }

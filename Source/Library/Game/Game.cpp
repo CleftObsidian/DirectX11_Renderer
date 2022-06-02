@@ -101,10 +101,6 @@ namespace library
             }
         }
 
-#ifdef _DEBUG
-        m_renderer->Debug();
-#endif
-
         return static_cast<INT>(msg.wParam);
     }
 

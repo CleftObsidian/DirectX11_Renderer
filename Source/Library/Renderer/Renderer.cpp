@@ -514,9 +514,6 @@ namespace library
             // Set the index buffer
             m_immediateContext->IASetIndexBuffer(renderable->second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
 
-            // Set primitive topology
-            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
             // Set the input layout
             m_immediateContext->IASetInputLayout(renderable->second->GetVertexLayout().Get());
 
@@ -604,9 +601,6 @@ namespace library
 
             // Set the index buffer
             m_immediateContext->IASetIndexBuffer(voxel->get()->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
-
-            // Set primitive topology
-            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
             // Set the input layout
             m_immediateContext->IASetInputLayout(voxel->get()->GetVertexLayout().Get());
@@ -697,9 +691,6 @@ namespace library
 
             // Set the index buffer
             m_immediateContext->IASetIndexBuffer(model->second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
-
-            // Set primitive topology
-            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
             // Set the input layout
             m_immediateContext->IASetInputLayout(model->second->GetVertexLayout().Get());
@@ -794,8 +785,9 @@ namespace library
     void Renderer::RenderSceneToTexture()
     {
         //Unbind current pixel shader resources
-        ID3D11ShaderResourceView* const pSRV[2] = { NULL, NULL };
-        m_immediateContext->PSSetShaderResources(0, 2, pSRV);
+        ID3D11ShaderResourceView* const pSRV[1] = { NULL, };
+        m_immediateContext->PSSetShaderResources(0, 1, pSRV);
+        m_immediateContext->PSSetShaderResources(1, 1, pSRV);
         m_immediateContext->PSSetShaderResources(2, 1, pSRV);
 
         // Change render target to the shadow map texture
@@ -805,7 +797,7 @@ namespace library
         m_immediateContext->ClearRenderTargetView(m_shadowMapTexture->GetRenderTargetView().Get(), Colors::White);
 
         // Clear depth stencil view
-        m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH,  1.0f, 0u);
+        m_immediateContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0u);
 
         // For all renderables
         std::unordered_map<std::wstring, std::shared_ptr<Renderable>>::iterator renderable;
@@ -819,9 +811,6 @@ namespace library
             // Bind index buffer
             m_immediateContext->IASetIndexBuffer(renderable->second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
 
-            // Set primitive topology
-            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
             // Bind input layout
             m_immediateContext->IASetInputLayout(m_shadowVertexShader->GetVertexLayout().Get());
 
@@ -831,7 +820,7 @@ namespace library
                 .World = XMMatrixTranspose(renderable->second->GetWorldMatrix()),
                 .View = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(0ull)->GetViewMatrix()),
                 .Projection = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(0ull)->GetProjectionMatrix()),
-                .IsVoxel = false
+                .IsVoxel = FALSE
             };
             m_immediateContext->UpdateSubresource(m_cbShadowMatrix.Get(), 0u, nullptr, &cbShadowMatrix, 0u, 0u);
 
@@ -855,11 +844,12 @@ namespace library
             UINT uOffset = 0u;
             m_immediateContext->IASetVertexBuffers(0u, 1u, voxel->get()->GetVertexBuffer().GetAddressOf(), &uStride, &uOffset);
 
+            // Bind instance buffer
+            uStride = sizeof(InstanceData);
+            m_immediateContext->IASetVertexBuffers(2u, 1u, voxel->get()->GetInstanceBuffer().GetAddressOf(), &uStride, &uOffset);
+
             // Bind index buffer
             m_immediateContext->IASetIndexBuffer(voxel->get()->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
-
-            // Set primitive topology
-            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
             // Bind input layout
             m_immediateContext->IASetInputLayout(m_shadowVertexShader->GetVertexLayout().Get());
@@ -870,7 +860,7 @@ namespace library
                 .World = XMMatrixTranspose(voxel->get()->GetWorldMatrix()),
                 .View = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(0ull)->GetViewMatrix()),
                 .Projection = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(0ull)->GetProjectionMatrix()),
-                .IsVoxel = false
+                .IsVoxel = TRUE
             };
             m_immediateContext->UpdateSubresource(m_cbShadowMatrix.Get(), 0u, nullptr, &cbShadowMatrix, 0u, 0u);
 
@@ -897,9 +887,6 @@ namespace library
             // Bind index buffer
             m_immediateContext->IASetIndexBuffer(model->second->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
 
-            // Set primitive topology
-            m_immediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
             // Bind input layout
             m_immediateContext->IASetInputLayout(m_shadowVertexShader->GetVertexLayout().Get());
 
@@ -909,7 +896,7 @@ namespace library
                 .World = XMMatrixTranspose(model->second->GetWorldMatrix()),
                 .View = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(0ull)->GetViewMatrix()),
                 .Projection = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(0ull)->GetProjectionMatrix()),
-                .IsVoxel = false
+                .IsVoxel = FALSE
             };
             m_immediateContext->UpdateSubresource(m_cbShadowMatrix.Get(), 0u, nullptr, &cbShadowMatrix, 0u, 0u);
 
