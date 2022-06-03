@@ -177,7 +177,11 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
     
     if (currentDepth > closestDepth + 0.001f)
     {
-        float3 ambient = float3(0.1f, 0.1f, 0.1f);
+        float3 ambient = float3(0.0f, 0.0f, 0.0f);
+        for (uint i = 0u; i < NUM_LIGHTS; ++i)
+        {
+            ambient += float4(float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz, 1.0f);
+        }
         return float4(ambient, 1.0f) * diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
     }
     else // Phong Shading
@@ -226,7 +230,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
             reflectDirection = reflect(-lightDirection, normal);
             specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * LightColors[k];
         }
-    
+        
         return float4(ambient + diffuse + specular, 1.0f) * diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
     }
 }

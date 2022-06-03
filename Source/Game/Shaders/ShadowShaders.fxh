@@ -39,7 +39,7 @@ PS_SHADOW_INPUT VSShadow(VS_SHADOW_INPUT input)
 	  TODO: Vertex shader code (remove the comment)
 	--------------------------------------------------------------------*/
     PS_SHADOW_INPUT output = (PS_SHADOW_INPUT) 0;
-    float4 pos = input.Position;
+	float4 pos = input.Position;
 	
 	if (isVoxel)
     {
