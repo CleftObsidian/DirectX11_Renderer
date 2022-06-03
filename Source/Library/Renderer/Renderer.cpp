@@ -567,8 +567,8 @@ namespace library
 
                     // Render the triangles
                     m_immediateContext->DrawIndexed(renderable->second->GetMesh(i).uNumIndices,
-                        renderable->second->GetMesh(i).uBaseIndex,
-                        renderable->second->GetMesh(i).uBaseVertex);
+                                                    renderable->second->GetMesh(i).uBaseIndex,
+                                                    renderable->second->GetMesh(i).uBaseVertex);
                 }
             }
             else
@@ -655,10 +655,10 @@ namespace library
 
                     // Render the triangles
                     m_immediateContext->DrawIndexedInstanced(voxel->get()->GetMesh(i).uNumIndices,
-                        voxel->get()->GetNumInstances(),
-                        voxel->get()->GetMesh(i).uBaseIndex,
-                        voxel->get()->GetMesh(i).uBaseVertex,
-                        0u);
+                                                             voxel->get()->GetNumInstances(),
+                                                             voxel->get()->GetMesh(i).uBaseIndex,
+                                                             voxel->get()->GetMesh(i).uBaseVertex,
+                                                             0u);
                 }
             }
             else
@@ -754,8 +754,8 @@ namespace library
 
                     // Render the triangles
                     m_immediateContext->DrawIndexed(model->second->GetMesh(i).uNumIndices,
-                        model->second->GetMesh(i).uBaseIndex,
-                        model->second->GetMesh(i).uBaseVertex);
+                                                    model->second->GetMesh(i).uBaseIndex,
+                                                    model->second->GetMesh(i).uBaseVertex);
                 }
             }
             else
