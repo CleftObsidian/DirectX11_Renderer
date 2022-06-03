@@ -493,8 +493,8 @@ namespace library
         {
             cbLights.LightPositions[i] = m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetPosition();
             cbLights.LightColors[i] = m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetColor();
-            cbLights.LightViews[i] = m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetViewMatrix();
-            cbLights.LightProjections[i] = m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetProjectionMatrix();
+            cbLights.LightViews[i] = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetViewMatrix());
+            cbLights.LightProjections[i] = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetProjectionMatrix());
         };
         m_immediateContext->UpdateSubresource(m_cbLights.Get(), 0u, nullptr, &cbLights, 0u, 0u);
 

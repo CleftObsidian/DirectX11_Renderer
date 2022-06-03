@@ -174,7 +174,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
     
     closestDepth = LinearizeDepth(closestDepth);
     currentDepth = LinearizeDepth(currentDepth);
-    
+    return float4(closestDepth, closestDepth, closestDepth, 1.0f);
     if (currentDepth > closestDepth + 0.001f)
     {
         float3 ambient = float3(0.0f, 0.0f, 0.0f);
