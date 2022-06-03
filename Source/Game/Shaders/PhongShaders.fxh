@@ -180,7 +180,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
         float3 ambient = float3(0.0f, 0.0f, 0.0f);
         for (uint i = 0u; i < NUM_LIGHTS; ++i)
         {
-            ambient += float4(float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz, 1.0f);
+            ambient += ambient += float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz;
         }
         return float4(ambient, 1.0f) * diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
     }
@@ -207,7 +207,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
         float3 ambient = float3(0.0f, 0.0f, 0.0f);
         for (uint i = 0u; i < NUM_LIGHTS; ++i)
         {
-            ambient += float4(float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz, 1.0f);
+            ambient += ambient += float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz;
         }
 
         // diffuse

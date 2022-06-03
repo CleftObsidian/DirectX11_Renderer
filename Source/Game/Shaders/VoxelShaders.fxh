@@ -146,7 +146,7 @@ float4 PSVoxel(PS_INPUT input) : SV_TARGET
     float3 ambient = float3(0.0f, 0.0f, 0.0f);
     for (uint i = 0u; i < NUM_LIGHTS; ++i)
     {
-        ambient += float4(float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz, 1.0f);
+        ambient += float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz;
     }
 
     // diffuse
