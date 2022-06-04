@@ -35,9 +35,6 @@ struct PS_SHADOW_INPUT
 //--------------------------------------------------------------------------------------
 PS_SHADOW_INPUT VSShadow(VS_SHADOW_INPUT input)
 {
-	/*--------------------------------------------------------------------
-	  TODO: Vertex shader code (remove the comment)
-	--------------------------------------------------------------------*/
     PS_SHADOW_INPUT output = (PS_SHADOW_INPUT) 0;
 	float4 pos = input.Position;
 	
@@ -61,9 +58,6 @@ PS_SHADOW_INPUT VSShadow(VS_SHADOW_INPUT input)
 //--------------------------------------------------------------------------------------
 float4 PSShadow(PS_SHADOW_INPUT input) : SV_Target
 {
-	/*--------------------------------------------------------------------
-	  TODO: Pixel shader code (remove the comment)
-	--------------------------------------------------------------------*/
     float depthValue = input.DepthPosition.z / input.DepthPosition.w;
 	
     return float4(depthValue, depthValue, depthValue, 1.0f);

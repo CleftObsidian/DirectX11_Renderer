@@ -16,9 +16,6 @@ namespace library
                   m_invalidTexture, m_shadowMapTexture, m_shadowVertexShader,
                   m_shadowPixelShader].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Renderer definition (remove the comment)
-    --------------------------------------------------------------------*/
     Renderer::Renderer()
         : m_driverType(D3D_DRIVER_TYPE_NULL)
         , m_featureLevel(D3D_FEATURE_LEVEL_11_0)
@@ -64,9 +61,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Renderer::Initialize(_In_ HWND hWnd)
     {
         HRESULT hr = S_OK;
@@ -466,9 +460,6 @@ namespace library
 
       Summary:  Render the frame
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::Render definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Renderer::Render()
     {
         RenderSceneToTexture();
@@ -779,9 +770,6 @@ namespace library
 
       Summary:  Render scene to the texture
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Renderer::RenderSceneToTexture definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Renderer::RenderSceneToTexture()
     {
         //Unbind current pixel shader resources
@@ -832,7 +820,19 @@ namespace library
             m_immediateContext->PSSetShader(m_shadowPixelShader->GetPixelShader().Get(), nullptr, 0u);
 
             // Render the triangles
-            m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
+            if (renderable->second->HasTexture())
+            {
+                for (UINT i = 0; i < renderable->second->GetNumMeshes(); ++i)
+                {
+                    m_immediateContext->DrawIndexed(renderable->second->GetMesh(i).uNumIndices,
+                                                    renderable->second->GetMesh(i).uBaseIndex,
+                                                    renderable->second->GetMesh(i).uBaseVertex);
+                }
+            }
+            else
+            {
+                m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
+            }
         }
 
         // For all voxels in main scene
@@ -872,7 +872,21 @@ namespace library
             m_immediateContext->PSSetShader(m_shadowPixelShader->GetPixelShader().Get(), nullptr, 0u);
 
             // Render the triangles
-            m_immediateContext->DrawIndexedInstanced(voxel->get()->GetNumIndices(), voxel->get()->GetNumInstances(), 0u, 0, 0u);
+            if (voxel->get()->HasTexture())
+            {
+                for (UINT i = 0; i < voxel->get()->GetNumMeshes(); ++i)
+                {
+                    m_immediateContext->DrawIndexedInstanced(voxel->get()->GetMesh(i).uNumIndices,
+                                                             voxel->get()->GetNumInstances(),
+                                                             voxel->get()->GetMesh(i).uBaseIndex,
+                                                             voxel->get()->GetMesh(i).uBaseVertex,
+                                                             0u);
+                }
+            }
+            else
+            {
+                m_immediateContext->DrawIndexedInstanced(voxel->get()->GetNumIndices(), voxel->get()->GetNumInstances(), 0u, 0, 0u);
+            }
         }
 
         // For all models
@@ -908,7 +922,19 @@ namespace library
             m_immediateContext->PSSetShader(m_shadowPixelShader->GetPixelShader().Get(), nullptr, 0u);
 
             // Render the triangles
-            m_immediateContext->DrawIndexed(model->second->GetNumIndices(), 0u, 0);
+            if (model->second->HasTexture())
+            {
+                for (UINT i = 0; i < model->second->GetNumMeshes(); ++i)
+                {
+                    m_immediateContext->DrawIndexed(model->second->GetMesh(i).uNumIndices,
+                                                    model->second->GetMesh(i).uBaseIndex,
+                                                    model->second->GetMesh(i).uBaseVertex);
+                }
+            }
+            else
+            {
+                m_immediateContext->DrawIndexed(model->second->GetNumIndices(), 0u, 0);
+            }
         }
 
         // Reset the render target to the original back buffer

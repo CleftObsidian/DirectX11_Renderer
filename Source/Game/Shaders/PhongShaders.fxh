@@ -115,9 +115,6 @@ struct PS_LIGHT_CUBE_INPUT
 //--------------------------------------------------------------------------------------
 PS_PHONG_INPUT VSPhong(VS_PHONG_INPUT input)
 {
-	/*--------------------------------------------------------------------
-	  TODO: Vertex shader code (remove the comment)
-	--------------------------------------------------------------------*/
     PS_PHONG_INPUT output = (PS_PHONG_INPUT) 0;
     output.Position = mul(input.Position, World);
     output.WorldPosition = output.Position;
@@ -162,9 +159,6 @@ float LinearizeDepth(float depth)
 //--------------------------------------------------------------------------------------
 float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
 {
-	/*--------------------------------------------------------------------
-	  TODO: Pixel shader code (remove the comment)
-	--------------------------------------------------------------------*/
     float2 depthTexCoord = float2(0.0f, 0.0f);
     depthTexCoord.x = input.LightViewPosition.x / input.LightViewPosition.w / 2.0f + 0.5f;
     depthTexCoord.y = -input.LightViewPosition.y / input.LightViewPosition.w / 2.0f + 0.5f;
@@ -174,7 +168,7 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
     
     closestDepth = LinearizeDepth(closestDepth);
     currentDepth = LinearizeDepth(currentDepth);
-    return float4(closestDepth, closestDepth, closestDepth, 1.0f);
+    
     if (currentDepth > closestDepth + 0.001f)
     {
         float3 ambient = float3(0.0f, 0.0f, 0.0f);

@@ -10,9 +10,6 @@ namespace library
 	  Modifies: [m_uWidth, m_uHeight, m_texture2D, m_renderTargetView,
 				 m_shaderResourceView, m_samplerClamp].
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: RenderTexture::RenderTexture definition (remove the comment)
-	--------------------------------------------------------------------*/
 	RenderTexture::RenderTexture(_In_ UINT uWidth, _In_ UINT uHeight)
 		: m_uWidth(uWidth)
 		, m_uHeight(uHeight)
@@ -38,9 +35,6 @@ namespace library
 	  Returns:  HRESULT
 				  Status code
 	M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-	/*--------------------------------------------------------------------
-	  TODO: RenderTexture::Initialize definition (remove the comment)
-	--------------------------------------------------------------------*/
 	HRESULT RenderTexture::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
 	{
 		HRESULT hr = S_OK;

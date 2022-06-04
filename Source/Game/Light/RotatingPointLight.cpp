@@ -26,9 +26,6 @@ RotatingPointLight::RotatingPointLight(_In_ const XMFLOAT4& position, _In_ const
   Modifies: [m_position, m_eye, m_eye, m_at,
 			m_view].
 M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-/*--------------------------------------------------------------------
-  TODO: RotatingPointLight::Update definition (remove the comment)
---------------------------------------------------------------------*/
 void RotatingPointLight::Update(_In_ FLOAT deltaTime)
 {
     // Rotates around the origin
