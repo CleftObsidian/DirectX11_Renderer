@@ -10,8 +10,8 @@
             const XMFLOAT4& color
               Position of the color
 M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-RotatingPointLight::RotatingPointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color)
-    : PointLight(position, color)
+RotatingPointLight::RotatingPointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color, _In_ FLOAT attenuationDistance)
+    : PointLight(position, color, attenuationDistance)
 {
     // empty
 }

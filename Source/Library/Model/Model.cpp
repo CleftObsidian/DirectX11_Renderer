@@ -138,32 +138,35 @@ namespace library
             OutputDebugString(L"\n");
         }
 
-        // Create the animation buffer
-        D3D11_BUFFER_DESC aBufferDesc =
+        if ((m_pScene != nullptr) && m_pScene->HasAnimations())
         {
-            .ByteWidth = static_cast<UINT>(sizeof(AnimationData) * m_aAnimationData.size()),
-            .Usage = D3D11_USAGE_DEFAULT,
-            .BindFlags = D3D11_BIND_VERTEX_BUFFER,
-            .CPUAccessFlags = 0u,
-            .MiscFlags = 0u,
-            .StructureByteStride = 0u
-        };
-        D3D11_SUBRESOURCE_DATA aInitData =
-        {
-            .pSysMem = &m_aAnimationData[0],
-            .SysMemPitch = 0u,
-            .SysMemSlicePitch = 0u
-        };
-        hr = pDevice->CreateBuffer(&aBufferDesc, &aInitData, m_animationBuffer.GetAddressOf());
-        if (FAILED(hr))
-        {
-            MessageBox(
-                nullptr,
-                L"Call to CreateAnimationBuffer failed!",
-                L"Game Graphics Programming",
-                NULL
-            );
-            return hr;
+            // Create the animation buffer
+            D3D11_BUFFER_DESC aBufferDesc =
+            {
+                .ByteWidth = static_cast<UINT>(sizeof(AnimationData) * m_aAnimationData.size()),
+                .Usage = D3D11_USAGE_DEFAULT,
+                .BindFlags = D3D11_BIND_VERTEX_BUFFER,
+                .CPUAccessFlags = 0u,
+                .MiscFlags = 0u,
+                .StructureByteStride = 0u
+            };
+            D3D11_SUBRESOURCE_DATA aInitData =
+            {
+                .pSysMem = &m_aAnimationData[0],
+                .SysMemPitch = 0u,
+                .SysMemSlicePitch = 0u
+            };
+            hr = pDevice->CreateBuffer(&aBufferDesc, &aInitData, m_animationBuffer.GetAddressOf());
+            if (FAILED(hr))
+            {
+                MessageBox(
+                    nullptr,
+                    L"Call to CreateAnimationBuffer failed!",
+                    L"Game Graphics Programming",
+                    NULL
+                );
+                return hr;
+            }
         }
 
         // Create the skinning constant buffer
@@ -569,15 +572,18 @@ namespace library
             return hr;
         }
 
-        for (size_t i = 0; i < m_aVertices.size(); ++i)
+        if (m_pScene->HasAnimations())
         {
-            m_aAnimationData.push_back(
-                AnimationData
-                {
-                    .aBoneIndices = XMUINT4(m_aBoneData.at(i).aBoneIds),
-                    .aBoneWeights = XMFLOAT4(m_aBoneData.at(i).aWeights)
-                }
-            );
+            for (size_t i = 0; i < m_aVertices.size(); ++i)
+            {
+                m_aAnimationData.push_back(
+                    AnimationData
+                    {
+                        .aBoneIndices = XMUINT4(m_aBoneData.at(i).aBoneIds),
+                        .aBoneWeights = XMFLOAT4(m_aBoneData.at(i).aWeights)
+                    }
+                );
+            }
         }
 
         hr = initialize(pDevice, pImmediateContext);

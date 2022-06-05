@@ -50,6 +50,13 @@ cbuffer cbChangesEveryFrame : register(b2)
     bool HasNormalMap;
 };
 
+struct PointLightData
+{
+    float4 Position;
+    float4 Color;
+    float4 AttenuationDistance;
+};
+
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbLights
 
@@ -59,6 +66,8 @@ cbuffer cbLights : register(b3)
 {
     float4 LightPositions[NUM_LIGHTS];
     float4 LightColors[NUM_LIGHTS];
+    float4 LightAttenuationDistance[NUM_LIGHTS];
+    PointLightData PointLights[NUM_LIGHTS];
 };
 
 //--------------------------------------------------------------------------------------

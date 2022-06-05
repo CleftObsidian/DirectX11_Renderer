@@ -327,10 +327,10 @@ namespace library
         m_shadowMapTexture->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
 
         // Initialize the point lights of main scene
-        for (UINT i = 0; i < NUM_LIGHTS; ++i)
-        {
-            m_scenes[m_pszMainSceneName]->GetPointLight(i)->Initialize(uWidth, uHeight);
-        }
+        //for (UINT i = 0; i < NUM_LIGHTS; ++i)
+        //{
+        //    m_scenes[m_pszMainSceneName]->GetPointLight(i)->Initialize(uWidth, uHeight);
+        //}
 
         return hr;
     }
@@ -486,6 +486,10 @@ namespace library
             cbLights.LightColors[i] = m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetColor();
             cbLights.LightViews[i] = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetViewMatrix());
             cbLights.LightProjections[i] = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetProjectionMatrix());
+
+            FLOAT attenuationDistance = m_scenes[m_pszMainSceneName]->GetPointLight(i)->GetAttenuationDistance();
+            FLOAT attenuationDistanceSquared = attenuationDistance * attenuationDistance;
+            cbLights.LightAttenuationDistance[i] = XMFLOAT4(attenuationDistance, attenuationDistance, attenuationDistanceSquared, attenuationDistanceSquared);
         };
         m_immediateContext->UpdateSubresource(m_cbLights.Get(), 0u, nullptr, &cbLights, 0u, 0u);
 
@@ -534,22 +538,24 @@ namespace library
             {
                 for (UINT i = 0u; i < renderable->second->GetNumMeshes(); ++i)
                 {
-                    const UINT materialIndex = renderable->second->GetMesh(i).uMaterialIndex;
-                    if (renderable->second->GetMaterial(materialIndex)->pDiffuse)
+                    const UINT uMaterialIndex = renderable->second->GetMesh(i).uMaterialIndex;
+                    if (renderable->second->GetMaterial(uMaterialIndex)->pDiffuse)
                     {
                         // Set texture resource view of the renderable into the pixel shader
-                        m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetMaterial(materialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetShaderResources(0u, 1u, renderable->second->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
 
                         // Set sampler state of the renderable into the pixel shader
-                        m_immediateContext->PSSetSamplers(0u, 1u, renderable->second->GetMaterial(materialIndex)->pDiffuse->GetSamplerState().GetAddressOf());
+                        eTextureSamplerType textureSamplerType = renderable->second->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
+                        m_immediateContext->PSSetSamplers(0u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
-                    if (renderable->second->GetMaterial(materialIndex)->pNormal)
+                    if (renderable->second->GetMaterial(uMaterialIndex)->pNormal)
                     {
                         // Set texture resource view of the renderable into the pixel shader
-                        m_immediateContext->PSSetShaderResources(1u, 1u, renderable->second->GetMaterial(materialIndex)->pNormal->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetShaderResources(1u, 1u, renderable->second->GetMaterial(uMaterialIndex)->pNormal->GetTextureResourceView().GetAddressOf());
 
                         // Set sampler state of the renderable into the pixel shader
-                        m_immediateContext->PSSetSamplers(1u, 1u, renderable->second->GetMaterial(materialIndex)->pNormal->GetSamplerState().GetAddressOf());
+                        eTextureSamplerType textureSamplerType = renderable->second->GetMaterial(uMaterialIndex)->pNormal->GetSamplerType();
+                        m_immediateContext->PSSetSamplers(1u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
 
                     // Set texture and sampler state of the shadow map
@@ -622,22 +628,24 @@ namespace library
             {
                 for (UINT i = 0u; i < voxel->get()->GetNumMeshes(); ++i)
                 {
-                    const UINT materialIndex = voxel->get()->GetMesh(i).uMaterialIndex;
-                    if (voxel->get()->GetMaterial(materialIndex)->pDiffuse)
+                    const UINT uMaterialIndex = voxel->get()->GetMesh(i).uMaterialIndex;
+                    if (voxel->get()->GetMaterial(uMaterialIndex)->pDiffuse)
                     {
                         // Set texture resource view of the renderable into the pixel shader
-                        m_immediateContext->PSSetShaderResources(0u, 1u, voxel->get()->GetMaterial(materialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetShaderResources(0u, 1u, voxel->get()->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
 
                         // Set sampler state of the renderable into the pixel shader
-                        m_immediateContext->PSSetSamplers(0u, 1u, voxel->get()->GetMaterial(materialIndex)->pDiffuse->GetSamplerState().GetAddressOf());
+                        eTextureSamplerType textureSamplerType = voxel->get()->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
+                        m_immediateContext->PSSetSamplers(0u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
-                    if (voxel->get()->GetMaterial(materialIndex)->pNormal)
+                    if (voxel->get()->GetMaterial(uMaterialIndex)->pNormal)
                     {
                         // Set texture resource view of the renderable into the pixel shader
-                        m_immediateContext->PSSetShaderResources(1u, 1u, voxel->get()->GetMaterial(materialIndex)->pNormal->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetShaderResources(1u, 1u, voxel->get()->GetMaterial(uMaterialIndex)->pNormal->GetTextureResourceView().GetAddressOf());
 
                         // Set sampler state of the renderable into the pixel shader
-                        m_immediateContext->PSSetSamplers(1u, 1u, voxel->get()->GetMaterial(materialIndex)->pNormal->GetSamplerState().GetAddressOf());
+                        eTextureSamplerType textureSamplerType = voxel->get()->GetMaterial(uMaterialIndex)->pNormal->GetSamplerType();
+                        m_immediateContext->PSSetSamplers(1u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
 
                     // Set texture and sampler state of the shadow map
@@ -721,22 +729,24 @@ namespace library
             {
                 for (UINT i = 0u; i < model->second->GetNumMeshes(); ++i)
                 {
-                    const UINT materialIndex = model->second->GetMesh(i).uMaterialIndex;
-                    if (model->second->GetMaterial(materialIndex)->pDiffuse)
+                    const UINT uMaterialIndex = model->second->GetMesh(i).uMaterialIndex;
+                    if (model->second->GetMaterial(uMaterialIndex)->pDiffuse)
                     {
                         // Set texture resource view of the renderable into the pixel shader
-                        m_immediateContext->PSSetShaderResources(0u, 1u, model->second->GetMaterial(materialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetShaderResources(0u, 1u, model->second->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
 
                         // Set sampler state of the renderable into the pixel shader
-                        m_immediateContext->PSSetSamplers(0u, 1u, model->second->GetMaterial(materialIndex)->pDiffuse->GetSamplerState().GetAddressOf());
+                        eTextureSamplerType textureSamplerType = model->second->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
+                        m_immediateContext->PSSetSamplers(0u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
-                    if (model->second->GetMaterial(materialIndex)->pNormal)
+                    if (model->second->GetMaterial(uMaterialIndex)->pNormal)
                     {
                         // Set texture resource view of the renderable into the pixel shader
-                        m_immediateContext->PSSetShaderResources(1u, 1u, model->second->GetMaterial(materialIndex)->pNormal->GetTextureResourceView().GetAddressOf());
+                        m_immediateContext->PSSetShaderResources(1u, 1u, model->second->GetMaterial(uMaterialIndex)->pNormal->GetTextureResourceView().GetAddressOf());
 
                         // Set sampler state of the renderable into the pixel shader
-                        m_immediateContext->PSSetSamplers(1u, 1u, model->second->GetMaterial(materialIndex)->pNormal->GetSamplerState().GetAddressOf());
+                        eTextureSamplerType textureSamplerType = model->second->GetMaterial(uMaterialIndex)->pNormal->GetSamplerType();
+                        m_immediateContext->PSSetSamplers(1u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
 
                     // Set texture and sampler state of the shadow map
@@ -751,13 +761,72 @@ namespace library
             }
             else
             {
-
                 // Set texture and sampler state of the shadow map
                 m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
                 m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
 
                 // Render the triangles
                 m_immediateContext->DrawIndexed(model->second->GetNumIndices(), 0u, 0);
+            }
+        }
+
+        // For skybox
+        if (m_scenes[m_pszMainSceneName]->GetSkyBox() != nullptr)
+        {
+            // Set the vertex buffer
+            UINT uStride = sizeof(SimpleVertex);
+            UINT uOffset = 0u;
+            m_immediateContext->IASetVertexBuffers(0u, 1u, m_scenes[m_pszMainSceneName]->GetSkyBox()->GetVertexBuffer().GetAddressOf(), &uStride, &uOffset);
+
+            // Set the index buffer
+            m_immediateContext->IASetIndexBuffer(m_scenes[m_pszMainSceneName]->GetSkyBox()->GetIndexBuffer().Get(), DXGI_FORMAT_R16_UINT, 0u);
+
+            // Set the input layout
+            m_immediateContext->IASetInputLayout(m_scenes[m_pszMainSceneName]->GetSkyBox()->GetVertexLayout().Get());
+
+            // Update renderable constant buffer
+            CBChangesEveryFrame cbChangesEveryFrame =
+            {
+                .World = XMMatrixTranspose(XMMatrixTranslationFromVector(m_camera.GetEye()) * m_scenes[m_pszMainSceneName]->GetSkyBox()->GetWorldMatrix()),
+                .OutputColor = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetOutputColor(),
+                .HasNormalMap = m_scenes[m_pszMainSceneName]->GetSkyBox()->HasNormalMap()
+            };
+            m_immediateContext->UpdateSubresource(m_scenes[m_pszMainSceneName]->GetSkyBox()->GetConstantBuffer().Get(), 0u, nullptr, &cbChangesEveryFrame, 0u, 0u);
+
+            // Set the vertex shader and constant buffers
+            m_immediateContext->VSSetShader(m_scenes[m_pszMainSceneName]->GetSkyBox()->GetVertexShader().Get(), nullptr, 0u);
+            m_immediateContext->VSSetConstantBuffers(0u, 1u, m_camera.GetConstantBuffer().GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(1u, 1u, m_cbChangeOnResize.GetAddressOf());
+            m_immediateContext->VSSetConstantBuffers(2u, 1u, m_scenes[m_pszMainSceneName]->GetSkyBox()->GetConstantBuffer().GetAddressOf());
+
+            // Set the pixel shader and constant buffers
+            m_immediateContext->PSSetShader(m_scenes[m_pszMainSceneName]->GetSkyBox()->GetPixelShader().Get(), nullptr, 0u);
+
+            if (m_scenes[m_pszMainSceneName]->GetSkyBox()->HasTexture())
+            {
+                for (UINT i = 0u; i < m_scenes[m_pszMainSceneName]->GetSkyBox()->GetNumMeshes(); ++i)
+                {
+                    const UINT uMaterialIndex = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uMaterialIndex;
+                    if (m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse)
+                    {
+                        // Set texture resource view of the renderable into the pixel shader
+                        m_immediateContext->PSSetShaderResources(0u, 1u, m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+
+                        // Set sampler state of the renderable into the pixel shader
+                        eTextureSamplerType textureSamplerType = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
+                        m_immediateContext->PSSetSamplers(0u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
+                    }
+
+                    // Render the triangles
+                    m_immediateContext->DrawIndexed(m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uNumIndices,
+                                                    m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uBaseIndex,
+                                                    m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uBaseVertex);
+                }
+            }
+            else
+            {
+                // Render the triangles
+                m_immediateContext->DrawIndexed(m_scenes[m_pszMainSceneName]->GetSkyBox()->GetNumIndices(), 0u, 0);
             }
         }
 

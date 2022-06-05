@@ -54,6 +54,13 @@ cbuffer cbChangesEveryFrame : register(b2)
     bool HasNormalMap;
 };
 
+struct PointLightData
+{
+    float4 Position;
+    float4 Color;
+    float4 AttenuationDistance;
+};
+
 /*C+C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C+++C
   Cbuffer:  cbLights
 
@@ -65,6 +72,8 @@ cbuffer cbLights : register(b3)
     float4 LightColors[NUM_LIGHTS];
 	matrix LightViews[NUM_LIGHTS];
 	matrix LightProjections[NUM_LIGHTS];
+    float4 LightAttenuationDistance[NUM_LIGHTS];
+    PointLightData PointLights[NUM_LIGHTS];
 };
 
 //--------------------------------------------------------------------------------------
@@ -174,7 +183,10 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
         float3 ambient = float3(0.0f, 0.0f, 0.0f);
         for (uint i = 0u; i < NUM_LIGHTS; ++i)
         {
-            ambient += ambient += float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz;
+            float distanceSquared = dot(input.WorldPosition - LightPositions[i].xyz, input.WorldPosition - LightPositions[i].xyz);
+            float attenuation = LightAttenuationDistance[i].w / (distanceSquared + 0.000001f);
+            
+            ambient += ambient += float3(0.1f, 0.1f, 0.1f) * (LightColors[i].xyz * attenuation);
         }
         return float4(ambient, 1.0f) * diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
     }
@@ -196,36 +208,60 @@ float4 PSPhong(PS_PHONG_INPUT input) : SV_Target
             // Normalize the resulting bump normal and replace existing normal
             normal = normalize(bumpNormal);
         }
-    
-        // ambient
+        
         float3 ambient = float3(0.0f, 0.0f, 0.0f);
-        for (uint i = 0u; i < NUM_LIGHTS; ++i)
-        {
-            ambient += ambient += float3(0.1f, 0.1f, 0.1f) * LightColors[i].xyz;
-        }
-
-        // diffuse
-        float3 lightDirection = float3(0.0f, 0.0f, 0.0f);
         float3 diffuse = float3(0.0f, 0.0f, 0.0f);
-        for (uint j = 0u; j < NUM_LIGHTS; ++j)
-        {
-            lightDirection = normalize(LightPositions[j].xyz - input.WorldPosition);
-            diffuse += saturate(dot(normal, lightDirection)) * LightColors[j];
-        }
-
-        // specular
-        float3 viewDirection = normalize(CameraPosition.xyz - input.WorldPosition);
         float3 specular = float3(0.0f, 0.0f, 0.0f);
-        float3 reflectDirection = float3(0.0f, 0.0f, 0.0f);
-        float shiness = 20.0f;
-        for (uint k = 0; k < NUM_LIGHTS; ++k)
+        for (uint i = 0; i < NUM_LIGHTS; ++i)
         {
-            lightDirection = normalize(LightPositions[k].xyz - input.WorldPosition);
-            reflectDirection = reflect(-lightDirection, normal);
-            specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * LightColors[k];
+            float distanceSquared = dot(input.WorldPosition - LightPositions[i].xyz, input.WorldPosition - LightPositions[i].xyz);
+            float attenuation = LightAttenuationDistance[i].w / (distanceSquared + 0.000001f);
+            
+            // ambient
+            ambient += ambient += float3(0.1f, 0.1f, 0.1f) * (LightColors[i].xyz * attenuation);
+            
+            // diffuse
+            float3 lightDirection = normalize(LightPositions[i].xyz - input.WorldPosition);
+            diffuse += saturate(dot(normal, lightDirection)) * (LightColors[i] * attenuation);
+
+            // specular
+            float3 viewDirection = normalize(CameraPosition.xyz - input.WorldPosition);
+            float3 reflectDirection = reflect(-lightDirection, normal);
+            float shiness = 20.0f;
+            specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * (LightColors[i] * attenuation);
         }
         
         return float4(ambient + diffuse + specular, 1.0f) * diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
+        
+        //// ambient
+        //float3 ambient = float3(0.0f, 0.0f, 0.0f);
+        //for (uint i = 0u; i < NUM_LIGHTS; ++i)
+        //{
+        //    ambient += ambient += float3(0.1f, 0.1f, 0.1f) * (LightColors[i].xyz * attenuation);
+        //}
+
+        //// diffuse
+        //float3 lightDirection = float3(0.0f, 0.0f, 0.0f);
+        //float3 diffuse = float3(0.0f, 0.0f, 0.0f);
+        //for (uint j = 0u; j < NUM_LIGHTS; ++j)
+        //{
+        //    lightDirection = normalize(LightPositions[j].xyz - input.WorldPosition);
+        //    diffuse += saturate(dot(normal, lightDirection)) * (LightColors[j] * attenuation);
+        //}
+
+        //// specular
+        //float3 viewDirection = normalize(CameraPosition.xyz - input.WorldPosition);
+        //float3 specular = float3(0.0f, 0.0f, 0.0f);
+        //float3 reflectDirection = float3(0.0f, 0.0f, 0.0f);
+        //float shiness = 20.0f;
+        //for (uint k = 0; k < NUM_LIGHTS; ++k)
+        //{
+        //    lightDirection = normalize(LightPositions[k].xyz - input.WorldPosition);
+        //    reflectDirection = reflect(-lightDirection, normal);
+        //    specular += pow(saturate(dot(reflectDirection, viewDirection)), shiness) * (LightColors[k] * attenuation);
+        //}
+        
+        //return float4(ambient + diffuse + specular, 1.0f) * diffuseTexture.Sample(diffuseSamplers, input.TexCoord);
     }
 }
 
