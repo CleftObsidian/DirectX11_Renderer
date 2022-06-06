@@ -19,9 +19,6 @@ namespace library
 
       Modifies: [m_filePath, m_textureRV, m_textureSamplerType].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Texture::Texture definition (remove the comment)
-    --------------------------------------------------------------------*/
     Texture::Texture(_In_ const std::filesystem::path& filePath, _In_opt_ eTextureSamplerType textureSamplerType)
         : m_filePath(filePath)
         , m_textureRV()
@@ -68,9 +65,6 @@ namespace library
         {
             D3D11_SAMPLER_DESC sampDesc =
             {
-                /*--------------------------------------------------------------------
-                  TODO: Initialize the trilinear wrap sampler (remove the comment)
-                --------------------------------------------------------------------*/
                 .Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
                 .AddressU = D3D11_TEXTURE_ADDRESS_WRAP,
                 .AddressV = D3D11_TEXTURE_ADDRESS_WRAP,
@@ -87,9 +81,6 @@ namespace library
         {
             D3D11_SAMPLER_DESC sampDesc =
             {
-                /*--------------------------------------------------------------------
-                  TODO: Initialize the trilinear clamp sampler (remove the comment)
-                --------------------------------------------------------------------*/
                 .Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR,
                 .AddressU = D3D11_TEXTURE_ADDRESS_CLAMP,
                 .AddressV = D3D11_TEXTURE_ADDRESS_CLAMP,

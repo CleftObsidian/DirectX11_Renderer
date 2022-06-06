@@ -18,9 +18,6 @@ namespace library
 
       Modifies: [m_cubeMapFileName, m_scale].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Skybox::Skybox definition (remove the comment)
-    --------------------------------------------------------------------*/
     Skybox::Skybox(_In_ const std::filesystem::path& cubeMapFilePath, _In_ FLOAT scale)
         : Model(L"Content/Common/Sphere.obj")
         , m_cubeMapFileName(cubeMapFilePath)
@@ -41,9 +38,6 @@ namespace library
 
       Modifies: [m_aMeshes, m_aMaterials].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Skybox::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Skybox::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
         HRESULT hr = S_OK;
@@ -58,8 +52,14 @@ namespace library
         m_aMeshes[0].uMaterialIndex = 0u;
 
         // Set and initialize the first (0th) material¡¯s diffuse texture by the m_cubeMapFileName
-        m_aMaterials[0]->pDiffuse = std::make_shared<Texture>(m_cubeMapFileName);
+        m_aMaterials[0]->pDiffuse = std::make_shared<Texture>(m_cubeMapFileName, eTextureSamplerType::TRILINEAR_CLAMP);
         hr = m_aMaterials[0]->pDiffuse->Initialize(pDevice, pImmediateContext);
+        if (SUCCEEDED(hr))
+        {
+            OutputDebugString(L"Loaded diffuse texture \"");
+            OutputDebugString(m_cubeMapFileName.c_str());
+            OutputDebugString(L"\"\n");
+        }
 
         return hr;
     }
@@ -72,9 +72,6 @@ namespace library
       Returns:  const std::shared_ptr<Texture>&
                   Cube map texture object
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Skybox::GetSkyboxTexture definition (remove the comment)
-    --------------------------------------------------------------------*/
     const std::shared_ptr<Texture>& Skybox::GetSkyboxTexture() const
     {
         return m_aMaterials[0]->pDiffuse;
@@ -90,9 +87,6 @@ namespace library
                 const aiMesh* pMesh
                   Point to an assimp mesh object
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Skybox::initSingleMesh definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Skybox::initSingleMesh(_In_ UINT uMeshIndex, _In_ const aiMesh* pMesh)
     {
         const aiVector3D zero3d(0.0f, 0.0f, 0.0f);
@@ -137,9 +131,9 @@ namespace library
                 static_cast<WORD>(face.mIndices[0]),
             };
 
-            m_aIndices.push_back(aIndices[2]);
-            m_aIndices.push_back(aIndices[1]);
             m_aIndices.push_back(aIndices[0]);
+            m_aIndices.push_back(aIndices[1]);
+            m_aIndices.push_back(aIndices[2]);
         }
 
         initMeshBones(uMeshIndex, pMesh);

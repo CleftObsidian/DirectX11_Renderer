@@ -327,10 +327,10 @@ namespace library
         m_shadowMapTexture->Initialize(m_d3dDevice.Get(), m_immediateContext.Get());
 
         // Initialize the point lights of main scene
-        //for (UINT i = 0; i < NUM_LIGHTS; ++i)
-        //{
-        //    m_scenes[m_pszMainSceneName]->GetPointLight(i)->Initialize(uWidth, uHeight);
-        //}
+        for (UINT i = 0; i < NUM_LIGHTS; ++i)
+        {
+            m_scenes[m_pszMainSceneName]->GetPointLight(i)->Initialize(uWidth, uHeight);
+        }
 
         return hr;
     }
@@ -558,9 +558,26 @@ namespace library
                         m_immediateContext->PSSetSamplers(1u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
 
-                    // Set texture and sampler state of the shadow map
+                    // Set texture and sampler state of the shadow map into the pixel shader
                     m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
                     m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
+
+                    if (m_scenes[m_pszMainSceneName]->GetSkyBox() != nullptr)
+                    {
+                        for (UINT i = 0u; i < m_scenes[m_pszMainSceneName]->GetSkyBox()->GetNumMeshes(); ++i)
+                        {
+                            const UINT uMaterialIndex = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uMaterialIndex;
+                            if (m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse)
+                            {
+                                // Set texture resource view of the skybox into the pixel shader
+                                m_immediateContext->PSSetShaderResources(3u, 1u, m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+
+                                // Set sampler state of the skybox into the pixel shader
+                                eTextureSamplerType textureSamplerType = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
+                                m_immediateContext->PSSetSamplers(3u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
+                            }
+                        }
+                    }
 
                     // Render the triangles
                     m_immediateContext->DrawIndexed(renderable->second->GetMesh(i).uNumIndices,
@@ -570,9 +587,26 @@ namespace library
             }
             else
             {
-                // Set texture and sampler state of the shadow map
+                // Set texture and sampler state of the shadow map into the pixel shader
                 m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
                 m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
+
+                if (m_scenes[m_pszMainSceneName]->GetSkyBox() != nullptr)
+                {
+                    for (UINT i = 0u; i < m_scenes[m_pszMainSceneName]->GetSkyBox()->GetNumMeshes(); ++i)
+                    {
+                        const UINT uMaterialIndex = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uMaterialIndex;
+                        if (m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse)
+                        {
+                            // Set texture resource view of the skybox into the pixel shader
+                            m_immediateContext->PSSetShaderResources(3u, 1u, m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+
+                            // Set sampler state of the skybox into the pixel shader
+                            eTextureSamplerType textureSamplerType = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
+                            m_immediateContext->PSSetSamplers(3u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
+                        }
+                    }
+                }
 
                 // Render the triangles
                 m_immediateContext->DrawIndexed(renderable->second->GetNumIndices(), 0u, 0);
@@ -648,9 +682,26 @@ namespace library
                         m_immediateContext->PSSetSamplers(1u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
 
-                    // Set texture and sampler state of the shadow map
+                    // Set texture and sampler state of the shadow map into the pixel shader
                     m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
                     m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
+
+                    if (m_scenes[m_pszMainSceneName]->GetSkyBox() != nullptr)
+                    {
+                        for (UINT i = 0u; i < m_scenes[m_pszMainSceneName]->GetSkyBox()->GetNumMeshes(); ++i)
+                        {
+                            const UINT uMaterialIndex = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uMaterialIndex;
+                            if (m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse)
+                            {
+                                // Set texture resource view of the skybox into the pixel shader
+                                m_immediateContext->PSSetShaderResources(3u, 1u, m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+
+                                // Set sampler state of the skybox into the pixel shader
+                                eTextureSamplerType textureSamplerType = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
+                                m_immediateContext->PSSetSamplers(3u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
+                            }
+                        }
+                    }
 
                     // Render the triangles
                     m_immediateContext->DrawIndexedInstanced(voxel->get()->GetMesh(i).uNumIndices,
@@ -662,9 +713,26 @@ namespace library
             }
             else
             {
-                // Set texture and sampler state of the shadow map
+                // Set texture and sampler state of the shadow map into the pixel shader
                 m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
                 m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
+
+                if (m_scenes[m_pszMainSceneName]->GetSkyBox() != nullptr)
+                {
+                    for (UINT i = 0u; i < m_scenes[m_pszMainSceneName]->GetSkyBox()->GetNumMeshes(); ++i)
+                    {
+                        const UINT uMaterialIndex = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uMaterialIndex;
+                        if (m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse)
+                        {
+                            // Set texture resource view of the skybox into the pixel shader
+                            m_immediateContext->PSSetShaderResources(3u, 1u, m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+
+                            // Set sampler state of the skybox into the pixel shader
+                            eTextureSamplerType textureSamplerType = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
+                            m_immediateContext->PSSetSamplers(3u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
+                        }
+                    }
+                }
 
                 // Render the triangles
                 m_immediateContext->DrawIndexedInstanced(voxel->get()->GetNumIndices(), voxel->get()->GetNumInstances(), 0u, 0, 0u);
@@ -749,9 +817,26 @@ namespace library
                         m_immediateContext->PSSetSamplers(1u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }
 
-                    // Set texture and sampler state of the shadow map
+                    // Set texture and sampler state of the shadow map into the pixel shader
                     m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
                     m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
+
+                    if (m_scenes[m_pszMainSceneName]->GetSkyBox() != nullptr)
+                    {
+                        for (UINT i = 0u; i < m_scenes[m_pszMainSceneName]->GetSkyBox()->GetNumMeshes(); ++i)
+                        {
+                            const UINT uMaterialIndex = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uMaterialIndex;
+                            if (m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse)
+                            {
+                                // Set texture resource view of the skybox into the pixel shader
+                                m_immediateContext->PSSetShaderResources(3u, 1u, m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+
+                                // Set sampler state of the skybox into the pixel shader
+                                eTextureSamplerType textureSamplerType = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
+                                m_immediateContext->PSSetSamplers(3u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
+                            }
+                        }
+                    }
 
                     // Render the triangles
                     m_immediateContext->DrawIndexed(model->second->GetMesh(i).uNumIndices,
@@ -761,9 +846,26 @@ namespace library
             }
             else
             {
-                // Set texture and sampler state of the shadow map
+                // Set texture and sampler state of the shadow map into the pixel shader
                 m_immediateContext->PSSetShaderResources(2u, 1u, m_shadowMapTexture->GetShaderResourceView().GetAddressOf());
                 m_immediateContext->PSSetSamplers(2u, 1u, m_shadowMapTexture->GetSamplerState().GetAddressOf());
+
+                if (m_scenes[m_pszMainSceneName]->GetSkyBox() != nullptr)
+                {
+                    for (UINT i = 0u; i < m_scenes[m_pszMainSceneName]->GetSkyBox()->GetNumMeshes(); ++i)
+                    {
+                        const UINT uMaterialIndex = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uMaterialIndex;
+                        if (m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse)
+                        {
+                            // Set texture resource view of the skybox into the pixel shader
+                            m_immediateContext->PSSetShaderResources(3u, 1u, m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
+
+                            // Set sampler state of the skybox into the pixel shader
+                            eTextureSamplerType textureSamplerType = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
+                            m_immediateContext->PSSetSamplers(3u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
+                        }
+                    }
+                }
 
                 // Render the triangles
                 m_immediateContext->DrawIndexed(model->second->GetNumIndices(), 0u, 0);
@@ -787,7 +889,7 @@ namespace library
             // Update renderable constant buffer
             CBChangesEveryFrame cbChangesEveryFrame =
             {
-                .World = XMMatrixTranspose(XMMatrixTranslationFromVector(m_camera.GetEye()) * m_scenes[m_pszMainSceneName]->GetSkyBox()->GetWorldMatrix()),
+                .World = XMMatrixTranspose(m_scenes[m_pszMainSceneName]->GetSkyBox()->GetWorldMatrix() * XMMatrixTranslationFromVector(m_camera.GetEye())),
                 .OutputColor = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetOutputColor(),
                 .HasNormalMap = m_scenes[m_pszMainSceneName]->GetSkyBox()->HasNormalMap()
             };
@@ -809,10 +911,10 @@ namespace library
                     const UINT uMaterialIndex = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMesh(i).uMaterialIndex;
                     if (m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse)
                     {
-                        // Set texture resource view of the renderable into the pixel shader
+                        // Set texture resource view of the skybox into the pixel shader
                         m_immediateContext->PSSetShaderResources(0u, 1u, m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetTextureResourceView().GetAddressOf());
 
-                        // Set sampler state of the renderable into the pixel shader
+                        // Set sampler state of the skybox into the pixel shader
                         eTextureSamplerType textureSamplerType = m_scenes[m_pszMainSceneName]->GetSkyBox()->GetMaterial(uMaterialIndex)->pDiffuse->GetSamplerType();
                         m_immediateContext->PSSetSamplers(0u, 1u, Texture::s_samplers[static_cast<size_t>(textureSamplerType)].GetAddressOf());
                     }

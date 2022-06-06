@@ -167,9 +167,6 @@ namespace library
                 ID3D11DeviceContext* pImmediateContext
                   The Direct3D context to set buffers
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Scene::Initialize definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Scene::Initialize(_In_ ID3D11Device* pDevice, _In_ ID3D11DeviceContext* pImmediateContext)
     {
         for (auto voxel : m_voxels)
@@ -413,9 +410,6 @@ namespace library
       Returns:  HRESULT
                   Status code
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Scene::AddSkyBox definition (remove the comment)
-    --------------------------------------------------------------------*/
     HRESULT Scene::AddSkyBox(_In_ const std::shared_ptr<Skybox>& skybox)
     {
         if (skybox == nullptr)
@@ -437,9 +431,6 @@ namespace library
       Args:     FLOAT deltaTime
                   Time difference of a frame
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Scene::Update definition (remove the comment)
-    --------------------------------------------------------------------*/
     void Scene::Update(_In_ FLOAT deltaTime)
     {
         for (auto it = m_renderables.begin(); it != m_renderables.end(); ++it)
@@ -552,9 +543,6 @@ namespace library
       Returns:  std::shared_ptr<Skybox>&
                   Sky box
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: Scene::GetSkyBox definition (remove the comment)
-    --------------------------------------------------------------------*/
     std::shared_ptr<Skybox>& Scene::GetSkyBox()
     {
         return m_skyBox;

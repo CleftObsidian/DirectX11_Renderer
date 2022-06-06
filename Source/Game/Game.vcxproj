@@ -117,6 +117,7 @@
   <ItemGroup>
     <None Include="Shaders\CubeMap.fxh" />
     <None Include="Shaders\PhongShaders.fxh" />
+    <None Include="Shaders\ReflectionShader.fxh" />
     <None Include="Shaders\Shaders.fxh" />
     <None Include="Shaders\ShadowShaders.fxh" />
     <None Include="Shaders\SkinningShaders.fxh" />

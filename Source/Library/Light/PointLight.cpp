@@ -18,9 +18,6 @@ namespace library
 
       Modifies: [m_position, m_color, m_attenuationDistance].
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: PointLight::PointLight definition (remove the comment)
-    --------------------------------------------------------------------*/
     PointLight::PointLight(_In_ const XMFLOAT4& position, _In_ const XMFLOAT4& color, _In_ FLOAT attenuationDistance)
         : m_position(position)
         , m_color(color)
@@ -42,9 +39,6 @@ namespace library
       Returns:  const XMFLOAT4&
                   Position of the light
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: PointLight::GetPosition definition (remove the comment)
-    --------------------------------------------------------------------*/
     const XMFLOAT4& PointLight::GetPosition() const
     {
         return m_position;
@@ -58,9 +52,6 @@ namespace library
       Returns:  const XMFLOAT4&
                   Color of the light
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: PointLight::GetColor definition (remove the comment)
-    --------------------------------------------------------------------*/
     const XMFLOAT4& PointLight::GetColor() const
     {
         return m_color;
@@ -74,9 +65,6 @@ namespace library
       Returns:  FLOAT
                   Attenuation distance
     M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
-    /*--------------------------------------------------------------------
-      TODO: PointLight::GetAttenuationDistance definition (remove the comment)
-    --------------------------------------------------------------------*/
     FLOAT PointLight::GetAttenuationDistance() const
     {
         return m_attenuationDistance;

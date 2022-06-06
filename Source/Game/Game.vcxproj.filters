@@ -79,6 +79,9 @@
     <None Include="Shaders\CubeMap.fxh">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\ReflectionShader.fxh">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube\BaseCube.h">

@@ -95,6 +95,11 @@ namespace library
         // empty
     }
 
+    Model::~Model()
+    {
+        delete m_pScene;
+    }
+
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Model::Initialize
 
@@ -120,6 +125,9 @@ namespace library
             m_filePath.string().c_str(),
             ASSIMP_LOAD_FLAGS
         );
+
+        // Application is now responsible of deleting this scene
+        m_pScene = sm_pImporter->GetOrphanedScene();
 
         // Initialize the model
         if (m_pScene)
