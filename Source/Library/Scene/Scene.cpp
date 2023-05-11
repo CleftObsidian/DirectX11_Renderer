@@ -213,20 +213,20 @@ namespace library
                 return hr;
             }
 
-            //for (int i = 0; i < it->second->GetNumMaterials(); ++i)
-            //{
-            //    AddMaterial(it->second->GetMaterial(i));
-            //}
+            for (int i = 0; i < it->second->GetNumMaterials(); ++i)
+            {
+                AddMaterial(it->second->GetMaterial(i));
+            }
         }
 
-        //for (auto it = m_materials.begin(); it != m_materials.end(); ++it)
-        //{
-        //    HRESULT hr = it->second->Initialize(pDevice, pImmediateContext);
-        //    if (FAILED(hr))
-        //    {
-        //        return hr;
-        //    }
-        //}
+        for (auto it = m_materials.begin(); it != m_materials.end(); ++it)
+        {
+            HRESULT hr = it->second->Initialize(pDevice, pImmediateContext);
+            if (FAILED(hr))
+            {
+                return hr;
+            }
+        }
 
         if (m_skyBox != nullptr)
         {
