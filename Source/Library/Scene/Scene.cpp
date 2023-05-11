@@ -397,6 +397,18 @@ namespace library
         return S_OK;
     }
 
+    HRESULT Scene::AddMaterial(_In_ const std::shared_ptr<Material>& material)
+    {
+        if (m_materials.contains(material->GetName()))
+        {
+            return E_FAIL;
+        }
+
+        m_materials[material->GetName()] = material;
+
+        return S_OK;
+    }
+
     /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
       Method:   Scene::AddSkyBox
 
@@ -737,6 +749,21 @@ namespace library
         for (std::shared_ptr<Voxel>& voxel : m_voxels)
         {
             voxel->SetPixelShader(m_pixelShaders[pszPixelShaderName]);
+        }
+
+        return S_OK;
+    }
+
+    HRESULT Scene::SetMaterialOfVoxel(_In_ PCWSTR pszMaterialName)
+    {
+        if (!m_materials.contains(pszMaterialName))
+        {
+            return E_FAIL;
+        }
+
+        for (std::shared_ptr<Voxel>& voxel : m_voxels)
+        {
+            voxel->AddMaterial(m_materials[pszMaterialName]);
         }
 
         return S_OK;

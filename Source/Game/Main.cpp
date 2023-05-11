@@ -15,14 +15,13 @@
 #include <fstream>
 #include <memory>
 
-#include "Cube/Cube.h"
-#include "Cube/RotatingCube.h"
 #include "Game/Game.h"
 #include "Light/RotatingPointLight.h"
 #include "Model/Model.h"
-#include "Renderer/Skybox.h"
 #include "Scene/Scene.h"
 #include "Scene/Voxel.h"
+#include "Cube/Cube.h"
+#include "Shader/SkinningVertexShader.h"
 #include "Shader/SkyMapVertexShader.h"
 
 /*F+F+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -48,16 +47,20 @@
 -----------------------------------------------------------------F-F*/
 INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ INT nCmdShow)
 {
+#ifdef _DEBUG
+    _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+#endif
+
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
 
-    std::unique_ptr<library::Game> game = std::make_unique<library::Game>(L"Game Graphics Programming: DirectX 11");
+    std::unique_ptr<library::Game> game = std::make_unique<library::Game>(L"Game Graphics Programming Lab 9: Normal Mapping");
 
     std::ofstream sceneFile;
     sceneFile.open("HeightMap.txt");
-    constexpr const UINT MAP_WIDTH = 0;
-    constexpr const UINT MAP_HEIGHT = 0;
-    constexpr const UINT MAP_DEPTH = 0;
+    constexpr const UINT MAP_WIDTH = 256u;
+    constexpr const UINT MAP_HEIGHT = 32u;
+    constexpr const UINT MAP_DEPTH = 256u;
     XMFLOAT4 aColors[] =
     {
         XMFLOAT4(0.0f,      0.666f, 0.0f,   1.0f),  // GRASSLAND
@@ -211,6 +214,12 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
     std::shared_ptr<library::Scene> mainScene = std::make_shared<library::Scene>(L"HeightMap.txt");
 
+    // Phong Skinning
+    std::shared_ptr<library::SkinningVertexShader> phongSkinningVertexShader = std::make_shared<library::SkinningVertexShader>(L"Shaders/SkinningShaders.fxh", "VSPhong", "vs_5_0");
+    if (FAILED(mainScene->AddVertexShader(L"PhongSkinningShader", phongSkinningVertexShader)))
+    {
+        return 0;
+    }
     // Phong
     std::shared_ptr<library::VertexShader> phongVertexShader = std::make_shared<library::VertexShader>(L"Shaders/PhongShaders.fxh", "VSPhong", "vs_5_0");
     if (FAILED(mainScene->AddVertexShader(L"PhongShader", phongVertexShader)))
@@ -248,6 +257,12 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
+    // Phong Skinning
+    std::shared_ptr<library::PixelShader> phongSkinningPixelShader = std::make_shared<library::PixelShader>(L"Shaders/SkinningShaders.fxh", "PSPhong", "ps_5_0");
+    if (FAILED(mainScene->AddPixelShader(L"PhongSkinningShader", phongSkinningPixelShader)))
+    {
+        return 0;
+    }
     // Phong
     std::shared_ptr<library::PixelShader> phongPixelShader = std::make_shared<library::PixelShader>(L"Shaders/PhongShaders.fxh", "PSPhong", "ps_5_0");
     if (FAILED(mainScene->AddPixelShader(L"PhongShader", phongPixelShader)))
@@ -291,12 +306,42 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
+    // Load Material
+    std::shared_ptr<library::Model> cyborg = std::make_shared<library::Model>(L"Content/cyborg/cyborg.obj");
+    cyborg->Translate(XMVectorSet(0.0f, 5.0f, 5.0f, 0.0f));
+    if (FAILED(mainScene->AddModel(L"Cyborg", cyborg)))
+    {
+        return 0;
+    }
+    if (FAILED(mainScene->SetVertexShaderOfModel(L"Cyborg", L"PhongShader")))
+    {
+        return 0;
+    }
+    if (FAILED(mainScene->SetPixelShaderOfModel(L"Cyborg", L"PhongShader")))
+    {
+        return 0;
+    }
+
+    std::shared_ptr<library::Material> voxelMaterial = std::make_shared<library::Material>(L"VoxelMaterial");
+    voxelMaterial->pDiffuse = std::make_shared<library::Texture>("Content/Cube/diffuse.png");
+    voxelMaterial->pNormal = std::make_shared<library::Texture>("Content/Cube/normal.png");
+
+    if (FAILED(mainScene->AddMaterial(voxelMaterial)))
+    {
+        return 0;
+    }
+
     if (FAILED(mainScene->SetVertexShaderOfVoxel(L"VoxelShader")))
     {
         return 0;
     }
 
     if (FAILED(mainScene->SetPixelShaderOfVoxel(L"VoxelShader")))
+    {
+        return 0;
+    }
+
+    if (FAILED(mainScene->SetMaterialOfVoxel(L"VoxelMaterial")))
     {
         return 0;
     }
@@ -311,28 +356,11 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-    std::shared_ptr<library::Model> nanosuit = std::make_shared<library::Model>(L"Content/Nanosuit/nanosuit.obj");
-    //nanosuit->Scale(0.1f, 0.1f, 0.1f);
-    if (FAILED(mainScene->AddModel(L"Nanosuit", nanosuit)))
-    {
-        return 0;
-    }
-    //if (FAILED(mainScene->SetVertexShaderOfModel(L"Sponza", L"PhongShader")))
-    if (FAILED(mainScene->SetVertexShaderOfModel(L"Nanosuit", L"EnvironmentMapShader")))
-    {
-        return 0;
-    }
-    //if (FAILED(mainScene->SetPixelShaderOfModel(L"Sponza", L"PhongShader")))
-    if (FAILED(mainScene->SetPixelShaderOfModel(L"Nanosuit", L"EnvironmentMapShader")))
-    {
-        return 0;
-    }
-
     XMFLOAT4 color;
-    XMStoreFloat4(&color, Colors::Orange);
+    XMStoreFloat4(&color, Colors::White);
 
     std::shared_ptr<library::PointLight> directionalLight = std::make_shared<library::PointLight>(
-        XMFLOAT4(0.f, 30.f, 0.f, 1.0f),
+        XMFLOAT4(-5.77f, 5.77f, -5.77f, 1.0f),
         color,
         45.0f
         );
@@ -341,27 +369,13 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
         return 0;
     }
 
-    std::shared_ptr<Cube> pointLight = std::make_shared<Cube>(color);
-    pointLight->Translate(XMVectorSet(0.0f, 30.0f, 0.0f, 0.0f));
-    if (FAILED(mainScene->AddRenderable(L"PointLight", pointLight)))
-    {
-        return 0;
-    }
-    if (FAILED(mainScene->SetVertexShaderOfRenderable(L"PointLight", L"LightShader")))
-    {
-        return 0;
-    }
-    if (FAILED(mainScene->SetPixelShaderOfRenderable(L"PointLight", L"LightShader")))
-    {
-        return 0;
-    }
-
     XMStoreFloat4(&color, Colors::White);
     std::shared_ptr<RotatingPointLight> rotatingDirectionalLight = std::make_shared<RotatingPointLight>(
-        XMFLOAT4(0.0f, 300.0f, 0.0f, 1.0f),
+        XMFLOAT4(0.0f, 0.0f, -5.0f, 1.0f),
         color,
-        400.0f
+        45.0f
         );
+
     if (FAILED(mainScene->AddPointLight(1, rotatingDirectionalLight)))
     {
         return 0;
@@ -373,55 +387,6 @@ INT WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
     }
 
     if (FAILED(game->GetRenderer()->SetMainScene(L"VoxelMap")))
-    {
-        return 0;
-    }
-
-    std::shared_ptr<RotatingCube> rotatingCube = std::make_shared<RotatingCube>(color);
-    rotatingCube->Translate(XMVectorSet(0.0f, 300.0f, 0.0f, 1.0f));
-    if (FAILED(mainScene->AddRenderable(L"RotatingCube", rotatingCube)))
-    {
-        return 0;
-    }
-    if (FAILED(mainScene->SetVertexShaderOfRenderable(L"RotatingCube", L"LightShader")))
-    {
-        return 0;
-    }
-    if (FAILED(mainScene->SetPixelShaderOfRenderable(L"RotatingCube", L"LightShader")))
-    {
-        return 0;
-    }
-
-    XMStoreFloat4(&color, Colors::Aqua);
-    std::shared_ptr<RotatingCube> reflectRotatingCube = std::make_shared<RotatingCube>(color);
-    reflectRotatingCube->Translate(XMVectorSet(0.0f, 0.0f, 5.0f, 0.0f));
-    reflectRotatingCube->Scale(10.0f, 10.0f, 10.0f);
-    if (FAILED(mainScene->AddRenderable(L"ReflectRotatingCube", reflectRotatingCube)))
-    {
-        return 0;
-    }
-    if (FAILED(mainScene->SetVertexShaderOfRenderable(L"ReflectRotatingCube", L"EnvironmentMapShader")))
-    {
-        return 0;
-    }
-    if (FAILED(mainScene->SetPixelShaderOfRenderable(L"ReflectRotatingCube", L"EnvironmentMapCubeShader")))
-    {
-        return 0;
-    }
-
-    XMStoreFloat4(&color, Colors::Silver);
-    std::shared_ptr<Cube> reflectCube = std::make_shared<Cube>(color);
-    reflectCube->Translate(XMVectorSet(0.0f, -5.0f, 0.0f, 0.0f));
-    reflectCube->Scale(10.0f, 10.0f, 10.0f);
-    if (FAILED(mainScene->AddRenderable(L"ReflectCube", reflectCube)))
-    {
-        return 0;
-    }
-    if (FAILED(mainScene->SetVertexShaderOfRenderable(L"ReflectCube", L"EnvironmentMapShader")))
-    {
-        return 0;
-    }
-    if (FAILED(mainScene->SetPixelShaderOfRenderable(L"ReflectCube", L"EnvironmentMapCubeShader")))
     {
         return 0;
     }
