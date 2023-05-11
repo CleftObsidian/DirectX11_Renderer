@@ -397,6 +397,19 @@ namespace library
         return S_OK;
     }
 
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Scene::AddMaterial
+
+      Summary:  Add the material into the renderer
+
+      Args:     const std::shared_ptr<Material>&
+                  Material to add
+
+      Modifies: [m_materials].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     HRESULT Scene::AddMaterial(_In_ const std::shared_ptr<Material>& material)
     {
         if (m_materials.contains(material->GetName()))
@@ -754,6 +767,19 @@ namespace library
         return S_OK;
     }
 
+    /*M+M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M+++M
+      Method:   Scene::SetMaterialOfVoxel
+
+      Summary:  Sets the pixel shader for the voxels in a scene
+
+      Args:     PCWSTR pszMaterialName
+                  Key of the material
+
+      Modifies: [m_voxels].
+
+      Returns:  HRESULT
+                  Status code
+    M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M---M-M*/
     HRESULT Scene::SetMaterialOfVoxel(_In_ PCWSTR pszMaterialName)
     {
         if (!m_materials.contains(pszMaterialName))
