@@ -66,8 +66,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PostBuildEvent>
-      <Command>mkdir "$(SolutionDir)..\Library\x64\Debug"
-copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"
+      <Command>copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"
 xcopy /y /d "$(SolutionDir)..\External\Assimp\Binary\x64\Debug\assimp-vc143-mtd.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <Lib>
@@ -104,8 +103,7 @@ xcopy /y /d "$(SolutionDir)..\External\Assimp\Binary\x64\Debug\assimp-vc143-mtd.
       <AdditionalLibraryDirectories>$(SolutionDir)..\External\Assimp\Library\x64\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Lib>
     <PostBuildEvent>
-      <Command>mkdir "$(SolutionDir)..\Library\x64\Release"
-copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"
+      <Command>copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"
 xcopy /y /d "$(SolutionDir)..\External\Assimp\Binary\x64\Release\assimp-vc143-mt.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
     <FxCompile>

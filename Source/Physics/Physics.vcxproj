@@ -119,7 +119,8 @@
       </AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
-      <Command>copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"</Command>
+      <Command>mkdir "$(SolutionDir)..\Library\x64\Debug"
+copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -144,7 +145,8 @@
       </AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
-      <Command>copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
+      <Command>mkdir "$(SolutionDir)..\Library\x64\Release"
+copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
