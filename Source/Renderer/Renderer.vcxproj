@@ -13,7 +13,7 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{806a313f-6e7f-44be-b236-1cc068776e33}</ProjectGuid>
+    <ProjectGuid>{4640766E-CEAB-4782-9ADE-1704AF2C13A7}</ProjectGuid>
     <RootNamespace>Library</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>Renderer</ProjectName>
