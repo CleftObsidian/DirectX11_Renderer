@@ -118,6 +118,9 @@
       <AdditionalDependencies>
       </AdditionalDependencies>
     </Lib>
+    <PostBuildEvent>
+      <Command>copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Debug"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -140,12 +143,21 @@
       <AdditionalDependencies>
       </AdditionalDependencies>
     </Lib>
+    <PostBuildEvent>
+      <Command>copy "$(TargetDir)" "$(SolutionDir)..\Library\x64\Release"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Math\Matrix33.cpp" />
     <ClCompile Include="Math\Rotor.cpp" />
     <ClCompile Include="Math\Vector3D.cpp" />
+    <ClCompile Include="PhysicsEngine\ConvexHull.cpp" />
+    <ClCompile Include="PhysicsEngine\OctreeNode.cpp" />
+    <ClCompile Include="PhysicsEngine\PhysicsEngine.cpp" />
+    <ClCompile Include="PhysicsEngine\RigidBody.cpp" />
     <ClCompile Include="PhysicsEngine\RigidSurface.cpp" />
+    <ClCompile Include="PhysicsObject\MovingObject.cpp" />
+    <ClCompile Include="PhysicsObject\PhysicsObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
@@ -154,7 +166,13 @@
     <ClInclude Include="Math\Transformation3D.h" />
     <ClInclude Include="Math\Vector3D.h" />
     <ClInclude Include="PhysicsEngine\CollisionInfo.h" />
+    <ClInclude Include="PhysicsEngine\ConvexHull.h" />
+    <ClInclude Include="PhysicsEngine\OctreeNode.h" />
+    <ClInclude Include="PhysicsEngine\PhysicsEngine.h" />
+    <ClInclude Include="PhysicsEngine\RigidBody.h" />
     <ClInclude Include="PhysicsEngine\RigidSurface.h" />
+    <ClInclude Include="PhysicsObject\MovingObject.h" />
+    <ClInclude Include="PhysicsObject\PhysicsObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

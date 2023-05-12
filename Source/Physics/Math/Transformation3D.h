@@ -2,7 +2,7 @@
 
 #include "Rotor.h"
 
-class Transformation3D
+class Transformation3D final
 {
 public:
 	static void TranslatePoints(std::vector<Vector3D*>* points, const Vector3D translation) {

@@ -3,6 +3,7 @@
 [Ll]ibrary/
 [Ss]ource/Game/x64
 [Ss]ource/Library/x64
+[Ss]ource/Physics/x64
 
 # Visual Studio cache/options directory
 .vs/

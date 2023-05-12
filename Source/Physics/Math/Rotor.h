@@ -2,10 +2,10 @@
 
 #include "Vector3D.h"
 
-class Rotor
+class Rotor final
 {
 public:
-	Rotor() = default;
+	Rotor();
 	Rotor(DOUBLE a, DOUBLE b, DOUBLE c, DOUBLE d);
 	Rotor(Vector3D unitAxis, DOUBLE theta);
 	~Rotor();

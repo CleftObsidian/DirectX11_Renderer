@@ -25,6 +25,12 @@
     <Filter Include="Source Files\PhysicsEngine">
       <UniqueIdentifier>{02ea3258-fb1b-4077-9363-973fdd49cc22}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\PhysicsObject">
+      <UniqueIdentifier>{5c5cbd18-dc4a-4004-b1e4-f0895aa4a141}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\PhysicsObject">
+      <UniqueIdentifier>{72b61217-d35f-4eef-9f81-18398a7cd434}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Math\Vector3D.cpp">
@@ -38,6 +44,24 @@
     </ClCompile>
     <ClCompile Include="PhysicsEngine\RigidSurface.cpp">
       <Filter>Source Files\PhysicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEngine\ConvexHull.cpp">
+      <Filter>Source Files\PhysicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEngine\RigidBody.cpp">
+      <Filter>Source Files\PhysicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEngine\OctreeNode.cpp">
+      <Filter>Source Files\PhysicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsEngine\PhysicsEngine.cpp">
+      <Filter>Source Files\PhysicsEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsObject\PhysicsObject.cpp">
+      <Filter>Source Files\PhysicsObject</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysicsObject\MovingObject.cpp">
+      <Filter>Source Files\PhysicsObject</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -61,6 +85,24 @@
     </ClInclude>
     <ClInclude Include="PhysicsEngine\RigidSurface.h">
       <Filter>Header Files\PhysicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEngine\ConvexHull.h">
+      <Filter>Header Files\PhysicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEngine\RigidBody.h">
+      <Filter>Header Files\PhysicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEngine\OctreeNode.h">
+      <Filter>Header Files\PhysicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsEngine\PhysicsEngine.h">
+      <Filter>Header Files\PhysicsEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsObject\PhysicsObject.h">
+      <Filter>Header Files\PhysicsObject</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysicsObject\MovingObject.h">
+      <Filter>Header Files\PhysicsObject</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

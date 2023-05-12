@@ -2,10 +2,10 @@
 
 #include "Common.h"
 
-class Vector3D
+class Vector3D final
 {
 public:
-	Vector3D() = default;
+	Vector3D();
 	Vector3D(DOUBLE x, DOUBLE y, DOUBLE z);
 	Vector3D(Vector3D vectorStart, Vector3D vectorEnd);
 	~Vector3D();

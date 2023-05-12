@@ -14,6 +14,5 @@
 
 #include <vector>
 #include <math.h>
-#include <inttypes.h>
 
 using namespace Microsoft::WRL;

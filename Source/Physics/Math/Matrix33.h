@@ -2,10 +2,10 @@
 
 #include "Vector3D.h"
 
-class Matrix33
+class Matrix33 final
 {
 public:
-	Matrix33() = default;
+	Matrix33();
 	Matrix33(DOUBLE a_values[9]);
 	~Matrix33();
 	
@@ -15,9 +15,9 @@ public:
 	Matrix33 operator*(const DOUBLE scalar) const;
 	Matrix33 operator+(const Matrix33& matrix) const;
 
-	static Matrix33 SKew(Vector3D vector);
+	static Matrix33 Skew(Vector3D vector);
 	static Vector3D NewtonSolve(Vector3D vector, Vector3D fV, const Matrix33& jacobian);
 
-private:
-	DOUBLE aa_elements[3][3];
+public:
+	DOUBLE m_aaElements[3][3];
 };
