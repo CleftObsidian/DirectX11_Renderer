@@ -34,3 +34,8 @@ RigidBody* PhysicsObject::GetRigidBody()
 {
 	return m_pBody;
 }
+
+void PhysicsObject::Update(FLOAT fElapsedTime)
+{
+	UNREFERENCED_PARAMETER(fElapsedTime);
+}

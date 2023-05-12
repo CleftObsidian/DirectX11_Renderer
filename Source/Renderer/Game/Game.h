@@ -15,6 +15,8 @@
 
 #include "Renderer/Renderer.h"
 #include "Window/MainWindow.h"
+#include "PhysicsEngine/PhysicsEngine.h"
+#include "PhysicsObject/PhysicsObject.h"
 
 namespace library
 {
@@ -60,5 +62,7 @@ namespace library
         PCWSTR m_pszGameName;
         std::unique_ptr<MainWindow> m_mainWindow;
         std::unique_ptr<Renderer> m_renderer;
+        std::unique_ptr<PhysicsEngine> m_physicsEngine;
+        std::vector<PhysicsObject*> m_objects;
     };
 }

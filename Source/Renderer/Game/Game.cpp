@@ -1,4 +1,78 @@
 #include "Game/Game.h"
+#include "Math/Transformation3D.h"
+
+PhysicsObject* createBox(DOUBLE x, DOUBLE y, DOUBLE z, DOUBLE xPos, DOUBLE yPos, DOUBLE zPos, BOOL fixed)
+{
+    Vector3D p1 = Vector3D(-x / 2.0, -y / 2.0, -z / 2.0);
+    Vector3D p2 = Vector3D(-x / 2.0, y / 2.0, -z / 2.0);
+    Vector3D p3 = Vector3D(x / 2.0, -y / 2.0, -z / 2.0);
+    Vector3D p4 = Vector3D(x / 2.0, y / 2.0, -z / 2.0);
+    Vector3D p5 = Vector3D(-x / 2.0, -y / 2.0, z / 2.0);
+    Vector3D p6 = Vector3D(-x / 2.0, y / 2.0, z / 2.0);
+    Vector3D p7 = Vector3D(x / 2.0, -y / 2.0, z / 2.0);
+    Vector3D p8 = Vector3D(x / 2.0, y / 2.0, z / 2.0);
+
+    Vector3D translation(xPos, yPos, zPos);
+    std::vector<Vector3D*> points;
+    points.push_back(&p1);
+    points.push_back(&p2);
+    points.push_back(&p3);
+    points.push_back(&p4);
+    points.push_back(&p5);
+    points.push_back(&p6);
+    points.push_back(&p7);
+    points.push_back(&p8);
+    Transformation3D::TranslatePoints(&points, translation);
+
+    std::vector<RigidSurface*> surfaces;
+
+    std::vector<Vector3D> s1Points;
+    s1Points.push_back(p1);
+    s1Points.push_back(p3);
+    s1Points.push_back(p7);
+    s1Points.push_back(p5);
+    surfaces.push_back(new RigidSurface(&s1Points, Vector3D(0, -1, 0)));
+
+    std::vector<Vector3D> s2Points;
+    s2Points.push_back(p2);
+    s2Points.push_back(p4);
+    s2Points.push_back(p8);
+    s2Points.push_back(p6);
+    surfaces.push_back(new RigidSurface(&s2Points, Vector3D(0, 1, 0)));
+
+    std::vector<Vector3D> s3Points;
+    s3Points.push_back(p1);
+    s3Points.push_back(p2);
+    s3Points.push_back(p6);
+    s3Points.push_back(p5);
+    surfaces.push_back(new RigidSurface(&s3Points, Vector3D(-1, 0, 0)));
+
+    std::vector<Vector3D> s4Points;
+    s4Points.push_back(p3);
+    s4Points.push_back(p4);
+    s4Points.push_back(p8);
+    s4Points.push_back(p7);
+    surfaces.push_back(new RigidSurface(&s4Points, Vector3D(1, 0, 0)));
+
+    std::vector<Vector3D> s5Points;
+    s5Points.push_back(p1);
+    s5Points.push_back(p2);
+    s5Points.push_back(p4);
+    s5Points.push_back(p3);
+    surfaces.push_back(new RigidSurface(&s5Points, Vector3D(0, 0, -1)));
+
+    std::vector<Vector3D> s6Points;
+    s6Points.push_back(p5);
+    s6Points.push_back(p6);
+    s6Points.push_back(p8);
+    s6Points.push_back(p7);
+    surfaces.push_back(new RigidSurface(&s6Points, Vector3D(0, 0, 1)));
+
+    std::vector<ConvexHull*> hulls;
+    hulls.push_back(new ConvexHull(&surfaces, 1));
+    RigidBody* body = new RigidBody(hulls, 1, 1, 0.3, fixed);
+    return new PhysicsObject(body);
+}
 
 namespace library
 {
@@ -16,6 +90,8 @@ namespace library
         : m_pszGameName(pszGameName)
         , m_mainWindow(std::make_unique<MainWindow>())
         , m_renderer(std::make_unique<Renderer>())
+        , m_physicsEngine(std::make_unique<PhysicsEngine>(0.00167))
+        , m_objects()
     {
         // empty
     }

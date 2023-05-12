@@ -14,7 +14,7 @@ public:
 	Vector3D GetPos();
 	RigidBody* GetRigidBody();
 
-	virtual void update(FLOAT fElapsedTime) = 0;
+	virtual void Update(FLOAT fElapsedTime);
 
 protected:
 	RigidBody* m_pBody;
