@@ -68,8 +68,8 @@ PhysicsObject* createBox(DOUBLE x, DOUBLE y, DOUBLE z, DOUBLE xPos, DOUBLE yPos,
     s6Points.push_back(p7);
     surfaces.push_back(new RigidSurface(&s6Points, Vector3D(0, 0, 1)));
 
-    std::vector<ConvexHull*> hulls;
-    hulls.push_back(new ConvexHull(&surfaces, 1));
+    std::vector<std::shared_ptr<ConvexHull>> hulls;
+    hulls.push_back(std::make_shared<ConvexHull>(&surfaces, 1));
     RigidBody* body = new RigidBody(hulls, 1, 1, 0.3, fixed);
     return new PhysicsObject(body);
 }
@@ -174,6 +174,28 @@ namespace library
                 // Render
                 m_renderer->Update(deltaTime);
                 m_renderer->Render();
+
+                // Physics
+                /*if (m_objects.empty())
+                {
+                    std::vector<std::shared_ptr<Voxel>>& voxels = m_renderer->GetSceneOrNull(m_renderer->GetMainSceneName())->GetVoxels();
+                    for (std::shared_ptr<Voxel> voxel : voxels)
+                    {
+                        XMVECTOR coord = XMVECTOR();
+                        coord = XMVector3TransformCoord(coord, voxel->GetWorldMatrix());
+                        PhysicsObject* block = createBox(1, 1, 1, (DOUBLE)XMVectorGetX(coord), (DOUBLE)XMVectorGetY(coord), (DOUBLE)XMVectorGetZ(coord), TRUE);
+                        m_objects.push_back(block);
+                    }
+                }*/
+                if (m_objects.empty())
+                {
+                    PhysicsObject* floor = createBox(1000, 10, 1000, 0, -50, 0, TRUE);
+                    m_objects.push_back(floor);
+                    m_physicsEngine->AddRigidBody(floor->GetRigidBody());
+
+                    m_physicsEngine->SetGravity(Vector3D(0, 160, 0));
+                    m_physicsEngine->SetOctree(TRUE, Vector3D(0, 0, 0), 6000, 300);
+                }
             }
         }
 

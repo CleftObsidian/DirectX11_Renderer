@@ -72,6 +72,8 @@ namespace library
 
         D3D_DRIVER_TYPE GetDriverType() const;
 
+        PCWSTR GetMainSceneName() const;
+
     private:
         D3D_DRIVER_TYPE m_driverType;
         D3D_FEATURE_LEVEL m_featureLevel;

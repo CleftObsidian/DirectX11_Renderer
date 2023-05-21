@@ -29,7 +29,7 @@ RigidBody::RigidBody()
 {
 }
 
-RigidBody::RigidBody(const std::vector<ConvexHull*>& hulls, DOUBLE density, DOUBLE friction, DOUBLE resistution, BOOL isFixed, BOOL custumCOM, Vector3D com)
+RigidBody::RigidBody(const std::vector<std::shared_ptr<ConvexHull>> hulls, DOUBLE density, DOUBLE friction, DOUBLE resistution, BOOL isFixed, BOOL custumCOM, Vector3D com)
 	: m_apPointsToTransform()
 	, m_aPointsOG()
 	, m_apHulls(hulls)
@@ -56,7 +56,7 @@ RigidBody::RigidBody(const std::vector<ConvexHull*>& hulls, DOUBLE density, DOUB
 {
 	findBodyMassAndInertia(density, custumCOM, com);
 
-	for (ConvexHull* hull : hulls)
+	for (std::shared_ptr<ConvexHull> hull : hulls)
 	{
 		for (RigidSurface* surface : *hull->GetSurfaces())
 		{
@@ -103,12 +103,12 @@ RigidBody::RigidBody(const RigidBody& body)
 	, m_bIsTrackHistory(FALSE)
 	, m_ID(-1)	// unitialized
 {
-	for (ConvexHull* hull : body.m_apHulls)
+	for (std::shared_ptr<ConvexHull> hull : body.m_apHulls)
 	{
-		m_apHulls.push_back(new ConvexHull(*hull));
+		m_apHulls.push_back(std::make_shared<ConvexHull>(*hull));
 	}
 
-	for (ConvexHull* hull : m_apHulls)
+	for (std::shared_ptr<ConvexHull> hull : m_apHulls)
 	{
 		for (RigidSurface* s : *hull->GetSurfaces())
 		{
@@ -132,14 +132,10 @@ RigidBody::RigidBody(const RigidBody& body)
 
 RigidBody::~RigidBody()
 {
-	for (Vector3D* vector : m_apPointsToTransform)
-	{
-		delete vector;
-	}
-	for (ConvexHull* hull : m_apHulls)
+	/*for (std::shared_ptr<ConvexHull> hull : m_apHulls)
 	{
 		delete hull;
-	}
+	}*/
 }
 
 Vector3D RigidBody::FindVectorRelativeToBodyFrame(const Vector3D vector)
@@ -179,7 +175,7 @@ Vector3D RigidBody::GetAngularVelocity()
 	return m_angularVelocity;
 }
 
-std::vector<ConvexHull*>* RigidBody::GetHulls()
+std::vector<std::shared_ptr<ConvexHull>>* RigidBody::GetHulls()
 {
 	return &m_apHulls;
 }
@@ -432,7 +428,7 @@ void RigidBody::findBodyMassAndInertia(DOUBLE density, BOOL useCustumCOM, Vector
 {
 	m_mass = 0;
 
-	for (ConvexHull* hull : m_apHulls)
+	for (std::shared_ptr<ConvexHull> hull : m_apHulls)
 	{
 		m_mass += hull->GetMass();
 		Vector3D hullCOM = hull->GetCenterOfMass();
@@ -451,7 +447,7 @@ void RigidBody::findBodyMassAndInertia(DOUBLE density, BOOL useCustumCOM, Vector
 		m_centerOfMass = custumCOM;
 	}
 
-	for (ConvexHull* hull : m_apHulls)
+	for (std::shared_ptr<ConvexHull> hull : m_apHulls)
 	{
 		Vector3D hullCOM = hull->GetCenterOfMass();
 		Vector3D hullRel;

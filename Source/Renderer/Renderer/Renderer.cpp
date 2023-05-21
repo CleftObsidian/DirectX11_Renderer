@@ -1124,4 +1124,9 @@ namespace library
     {
         return m_driverType;
     }
+
+    PCWSTR Renderer::GetMainSceneName() const
+    {
+        return m_pszMainSceneName;
+    }
 }

@@ -12,6 +12,16 @@
 #include <wincodec.h>
 #include <wrl.h>
 
+#define _CRTDBG_MAP_ALLOC
+#include <stdlib.h>
+#include <crtdbg.h>
+
+#include <cassert>
+#include <filesystem>
+#include <memory>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 #include <math.h>
 

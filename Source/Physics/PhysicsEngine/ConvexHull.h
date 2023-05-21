@@ -47,10 +47,10 @@ public:
 	DOUBLE GetCollisionRadius();
 	Matrix33* GetInertia();
 	DOUBLE GetMass();
-	BOOL IsHullsInCollisionRange(ConvexHull* hull);
-	BOOL SATColliderDetect(ConvexHull* potCollider, std::vector<ColPointInfo>* colSupPoints, Vector3D* collisionPoint, Vector3D* nVect, DOUBLE* collisionDepth, BOOL* separatingAxis);
+	BOOL IsHullsInCollisionRange(std::shared_ptr<ConvexHull> hull);
+	BOOL SATColliderDetect(std::shared_ptr<ConvexHull> potCollider, std::vector<ColPointInfo>* colSupPoints, Vector3D* collisionPoint, Vector3D* nVect, DOUBLE* collisionDepth, BOOL* separatingAxis);
 	//BOOL SATNew(ConvexHull* potCollider, std::vector<ColPointInfo>* colSupPoints, Vector3D* collisionPoint, Vector3D* nVect, DOUBLE* colDepth, BOOL* separatingAxis);
-	BOOL SATEdgeCol(ConvexHull* potCollider, Vector3D* collisionPoint, Vector3D* nVect, DOUBLE* collisionDepth, BOOL* separatingAxis);
+	BOOL SATEdgeCol(std::shared_ptr<ConvexHull> potCollider, Vector3D* collisionPoint, Vector3D* nVect, DOUBLE* collisionDepth, BOOL* separatingAxis);
 	BOOL IsPointInsideBody(const Vector3D point);
 
 private:

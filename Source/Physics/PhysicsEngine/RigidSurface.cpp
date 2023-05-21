@@ -37,10 +37,6 @@ RigidSurface::RigidSurface(const RigidSurface& surface)
 
 RigidSurface::~RigidSurface()
 {
-	for (Vector3D* point : m_apPoints)
-	{
-		delete point;
-	}
 }
 
 std::vector<Vector3D*>* RigidSurface::GetPoints()

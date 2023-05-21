@@ -113,7 +113,7 @@ DOUBLE ConvexHull::GetMass()
 	return m_mass;
 }
 
-BOOL ConvexHull::IsHullsInCollisionRange(ConvexHull* hull)
+BOOL ConvexHull::IsHullsInCollisionRange(std::shared_ptr<ConvexHull> hull)
 {
 	DOUBLE xDist = m_centerOfMass.m_x - hull->m_centerOfMass.m_x;
 	DOUBLE yDist = m_centerOfMass.m_y - hull->m_centerOfMass.m_y;
@@ -125,7 +125,7 @@ BOOL ConvexHull::IsHullsInCollisionRange(ConvexHull* hull)
 	return sqrDist <= colDist;
 }
 
-BOOL ConvexHull::SATColliderDetect(ConvexHull* potCollider, std::vector<ColPointInfo>* colSupPoints, Vector3D* collisionPoint, Vector3D* nVect, DOUBLE* collisionDepth, BOOL* separatingAxis)
+BOOL ConvexHull::SATColliderDetect(std::shared_ptr<ConvexHull> potCollider, std::vector<ColPointInfo>* colSupPoints, Vector3D* collisionPoint, Vector3D* nVect, DOUBLE* collisionDepth, BOOL* separatingAxis)
 {
 	std::vector<Vector3D> testedDirs;
 
@@ -262,7 +262,7 @@ BOOL ConvexHull::SATColliderDetect(ConvexHull* potCollider, std::vector<ColPoint
 	return bIsColFound;
 }
 
-BOOL ConvexHull::SATEdgeCol(ConvexHull* potCollider, Vector3D* collisionPoint, Vector3D* nVect, DOUBLE* collisionDepth, BOOL* separatingAxis)
+BOOL ConvexHull::SATEdgeCol(std::shared_ptr<ConvexHull> potCollider, Vector3D* collisionPoint, Vector3D* nVect, DOUBLE* collisionDepth, BOOL* separatingAxis)
 {
 	std::vector<Vector3D> testedDirs;
 

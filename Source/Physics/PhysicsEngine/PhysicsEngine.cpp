@@ -1,5 +1,6 @@
 #include "PhysicsEngine.h"
 #include <chrono>
+#include <stdio.h>
 
 PhysicsEngine::PhysicsEngine(DOUBLE timestep)
 	: m_gravity(Vector3D(0, 20, 0))	// default
@@ -19,10 +20,6 @@ PhysicsEngine::PhysicsEngine(DOUBLE timestep)
 
 PhysicsEngine::~PhysicsEngine()
 {
-	for (RigidBody* body : m_apRigidBodies)
-	{
-		delete body;
-	}
 }
 
 BOOL PhysicsEngine::IsBodyInUse(UINT16 bodyID)
@@ -272,9 +269,9 @@ BOOL PhysicsEngine::getColDetectInfo(RigidBody* body1, RigidBody* body2, std::ve
 {
 	BOOL colFound = FALSE;
 	DOUBLE colDepth = -1;
-	for (ConvexHull* hullA : *body1->GetHulls())
+	for (std::shared_ptr<ConvexHull> hullA : *body1->GetHulls())
 	{
-		for (ConvexHull* hullB : *body2->GetHulls())
+		for (std::shared_ptr<ConvexHull> hullB : *body2->GetHulls())
 		{
 			if (!hullA->IsHullsInCollisionRange(hullB))
 			{

@@ -8,7 +8,7 @@ class RigidBody
 {
 public:
 	RigidBody();
-	RigidBody(const std::vector<ConvexHull*>& hulls, DOUBLE density, DOUBLE friction, DOUBLE resistution, BOOL isFixed, BOOL custumCOM = FALSE, Vector3D com = Vector3D(0, 0, 0));
+	RigidBody(const std::vector<std::shared_ptr<ConvexHull>> hulls, DOUBLE density, DOUBLE friction, DOUBLE resistution, BOOL isFixed, BOOL custumCOM = FALSE, Vector3D com = Vector3D(0, 0, 0));
 	RigidBody(const RigidBody& body);
 	~RigidBody();
 
@@ -18,7 +18,7 @@ public:
 	DOUBLE GetCollisionRadius() const;
 	DOUBLE GetCollisionRadiusSquared() const;
 	Vector3D GetAngularVelocity();
-	std::vector<ConvexHull*>* GetHulls();
+	std::vector<std::shared_ptr<ConvexHull>>* GetHulls();
 	Vector3D GetCenterOfMass();
 	Vector3D GetVelocityOfPointDueToAngularVelocity(const Vector3D point) const;
 	Vector3D GetVelocityOfPoint(const Vector3D point) const;
@@ -65,7 +65,7 @@ private:
 private:
 	std::vector<Vector3D*> m_apPointsToTransform;
 	std::vector<Vector3D> m_aPointsOG;
-	std::vector<ConvexHull*> m_apHulls;
+	std::vector<std::shared_ptr<ConvexHull>> m_apHulls;
 	std::vector<UINT16> m_aTestedList;
 	std::vector<UINT16> m_aNoColList;
 	std::vector<CollisionInfo> m_aCollHistory;
